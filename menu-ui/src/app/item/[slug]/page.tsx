@@ -8,11 +8,10 @@ import { useContext, useEffect, useState } from "react";
 import { MenuItem } from "@/app/components/Data";
 import PlusIcon from '@/../public/PlusIcon.svg';
 import MinusIcon from '@/../public/RemoveIcon.svg';
+import { CartContext, useCart } from "@/app/context/Context";
 export default function ItemDetails () {
 
-  //  const {addItem} = useContext(OrderContext);
-
-    
+    const {addToCart} = useCart();
     const [item, setItem] = useState<any>();
     const [quantity, setQuantity] = useState(1);
     const params = useParams();
@@ -26,7 +25,13 @@ export default function ItemDetails () {
     console.log("Item", item);
 
     const handleAddToCart = () => {
-       
+       console.log("Clicked");
+         addToCart({
+              id: item.id,
+              name: item.name,
+              price: item.price,
+              quantity: quantity
+         });
     }
 
     // useEffect(() => {
@@ -58,7 +63,7 @@ export default function ItemDetails () {
                     <div className="text-[18px] font-bold">Chicken Burger</div>
                     <div className="flex justify-between items-center">
                         <div>
-                            <Image src={PlusIcon} alt="Plus Icon" onClick={() => handleAddToCart()} />
+                            <Image src={PlusIcon} alt="Plus Icon" onClick={handleAddToCart} />
                         </div>
 
                         <div className="mx-2">
