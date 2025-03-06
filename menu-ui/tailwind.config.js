@@ -15,6 +15,9 @@ module.exports = {
         bilobaFlower: "#A695EE",
         neonMagenta: "#E037F4",
       },
+      fontWeight: {
+        semiBold: "550",
+      }
     },
   },
   plugins: []

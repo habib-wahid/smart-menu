@@ -12,7 +12,8 @@ export const MenuItem = () => {
             tag: 'Home',
             price: '$299',
             image: ChickenBurger,
-            mainImage: Burger
+            mainImage: Burger,
+            description: 'Big juicy chicken burger with cheese, lettuce, tomato, onions and special sauce.',
         },
         {
             id: 2,
@@ -21,6 +22,7 @@ export const MenuItem = () => {
             price: '$199',
             image: ChickenPizza,
             mainImage: Burger,
+            description: 'Big juicy chicken burger with cheese, lettuce, tomato, onions and special sauce',
         },
         {
             id: 3,
@@ -28,7 +30,8 @@ export const MenuItem = () => {
             tag: 'Home',
             price: '$299',
             image: GrillChicken,
-            mainImage: Burger
+            mainImage: Burger,
+            description: 'Big juicy chicken burger with cheese, lettuce, tomato, onions and special sauce',
         },
         {
             id: 4,
@@ -36,7 +39,9 @@ export const MenuItem = () => {
             tag: 'Special',
             price: '$299',
             image: Platter,
-            mainImage: Burger
+            mainImage: Burger,
+            description: 'Big juicy chicken burger with cheese, lettuce, tomato, onions and special sauce',
+
         },
         {
             id: 5,
@@ -44,7 +49,8 @@ export const MenuItem = () => {
             tag: 'Special',
             price: '$299',
             image: Platter,
-            mainImage: Burger
+            mainImage: Burger,
+            description: 'Big juicy chicken burger with cheese, lettuce, tomato, onions and special sauce',
         }
     ]
 }

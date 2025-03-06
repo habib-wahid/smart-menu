@@ -20,8 +20,10 @@ export default function Footer() {
              alt="Home Icon"
              onClick={() => router.push('/')}/>
              
-            <Image className='cursor-pointer transition-transform 
-             hover:scale-105 active:scale-95' src={CartIcon} alt="Cart Icon" />
+            <Image className='cursor-pointer transition-transform hover:scale-105 active:scale-95' 
+             src={CartIcon} alt="Cart Icon"
+             onClick={() => router.push('/cart')}
+             />
             <Image className='cursor-pointer transition-transform 
              hover:scale-105 active:scale-95' src={ProfileIcon} alt="Profile Icon" />
         </footer>

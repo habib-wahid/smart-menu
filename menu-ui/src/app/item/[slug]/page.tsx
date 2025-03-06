@@ -19,7 +19,6 @@ export default function ItemDetails () {
     useEffect(() => {
         if (params?.slug) { 
             setItem(MenuItem().find((item) => item.id === Number(params.slug)))};
-        //setItem(MenuItem().find((item) => item.id === Number(1)));
     }, [params]);
     
     console.log("Item", item);
@@ -46,7 +45,7 @@ export default function ItemDetails () {
             item && (
                 <>
                 <div className="flex justify-center items-center w-full h-[40vh] bg-gradient-to-r from-[#A695EE] to-[#AB8EEE] relative rounded-bl-[50px]">
-                            <Image src={item.image} alt="Chicken Burger" fill/>
+                    <Image src={item.image} alt="Chicken Burger" fill/>
                 </div>
                             
                 <div className="flex justify-between items-center m-5">
@@ -60,21 +59,26 @@ export default function ItemDetails () {
                 </div>
 
                 <div className="flex justify-between items-center mx-5">
-                    <div className="text-[18px] font-bold">Chicken Burger</div>
+                    <div className="text-[20px] font-bold">Chicken Burger</div>
                     <div className="flex justify-between items-center">
                         <div>
-                            <Image src={PlusIcon} alt="Plus Icon" onClick={handleAddToCart} />
+                            <Image src={MinusIcon} alt="Minus Icon"
+                            className="cursor-pointer transition-transform duration-200 hover:scale-110"
+                            onClick={() => setQuantity(quantity - 1)} />
                         </div>
-
                         <div className="mx-2">
                             1
                         </div>
-
                         <div>
-                            <Image src={MinusIcon} alt="Minus Icon" onClick={() => setQuantity(quantity - 1)} />
+                            <Image src={PlusIcon} alt="Plus Icon"
+                            className="cursor-pointer transition-transform duration-200 hover:scale-110"
+                            onClick={handleAddToCart} />
                         </div>
-                    
                     </div>
+                </div>
+
+                <div className="mx-5 mt-2 font-semibold text-lg">
+                    {item.description}
                 </div>
                 <Footer />
                 </>
