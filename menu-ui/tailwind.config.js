@@ -14,6 +14,8 @@ module.exports = {
         customMagenta: "#BF6EF1",
         bilobaFlower: "#A695EE",
         neonMagenta: "#E037F4",
+        pastelLavender: "#AB8EEE",
+
       },
       fontWeight: {
         semiBold: "550",

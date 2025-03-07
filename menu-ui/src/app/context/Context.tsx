@@ -8,12 +8,14 @@ export interface CartItem {
     name: string;
     price: number;
     quantity: number;
+    image: string;
     addOns? : string[];
 }
 
 interface CartContextType {
     cart: CartItem[];
     addToCart: (item: CartItem) => void;
+    removeFromCart: (id: number) => void;
 }
 
 export const CartContext = createContext<CartContextType | null>(null);
@@ -33,12 +35,49 @@ export const CartProvider = ({children} : {children: React.ReactNode}) => {
     }, [cart]);
 
     const addToCart = (item: CartItem) => {
-        console.log("Adding to cart", item, " ", cart.length);
-        setCart([...cart, item]);
+        setCart((prev) => {
+            const existingItem = prev.find((i) => i.id === item.id);
+            if (existingItem) {
+                return prev.map((i) => {
+                    if (i.id === item.id) {
+                        return {
+                            ...i,
+                            quantity: i.quantity + item.quantity,
+                        };
+                    }
+                    return i;
+                });
+            }
+            return [...prev, item];
+        });
     }
 
+    const removeFromCart = (id: number) => {
+        setCart((prev) => {
+            const existingItem = prev.find((i) => i.id === id);
+            if (existingItem) {
+                if (existingItem.quantity === 1) {
+                    return prev.filter((i) => i.id !== id);
+                }
+                return prev.map((i) => {
+                    if (i.id === id){
+                        return {
+                            ...i,
+                            quantity: i.quantity - 1,
+                        }
+                    }
+                    return i;
+                });
+            }
+
+            return prev;
+        })
+    }
+
+
+
     return (
-        <CartContext.Provider value={{cart, addToCart}}>
+        <CartContext.Provider value={{cart, addToCart, removeFromCart}}>
             {children}
         </CartContext.Provider>
     )

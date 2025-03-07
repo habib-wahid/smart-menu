@@ -5,10 +5,12 @@ import CartIcon from '../../../public/Cart.svg';
 import ProfileIcon from '../../../public/Profile.svg';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useCart } from '../context/Context';
 
 
 export default function Footer() {
 
+    const {cart} = useCart();
     const router = useRouter();
 
     return (
@@ -20,12 +22,27 @@ export default function Footer() {
              alt="Home Icon"
              onClick={() => router.push('/')}/>
              
-            <Image className='cursor-pointer transition-transform hover:scale-105 active:scale-95' 
-             src={CartIcon} alt="Cart Icon"
-             onClick={() => router.push('/cart')}
-             />
-            <Image className='cursor-pointer transition-transform 
-             hover:scale-105 active:scale-95' src={ProfileIcon} alt="Profile Icon" />
+             <div className='relative'>
+                <Image className='cursor-pointer transition-transform hover:scale-105 active:scale-95' 
+                            src={CartIcon} alt="Cart Icon"
+                            onClick={() => router.push('/cart')}
+                            />
+
+                <span className="absolute top-0 right-0 -mt-2 -mr-1 bg-red-500 text-white text-xs font-bold px-1 rounded-full">
+                    {cart.map((item) => item.quantity).reduce((a, b) => a + b, 0)}
+                </span>
+             </div>
+           
+        
+            <Image 
+                className="cursor-pointer transition-transform hover:scale-105 active:scale-95" 
+                src={ProfileIcon} 
+                alt="Profile Icon" 
+            />
+
+            {/* Notification Badge */}
+           
+    
         </footer>
     )
 }
