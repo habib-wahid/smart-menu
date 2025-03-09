@@ -15,7 +15,7 @@ module.exports = {
         bilobaFlower: "#A695EE",
         neonMagenta: "#E037F4",
         pastelLavender: "#AB8EEE",
-
+        cartItemBackground: "#F3F3F3",
       },
       fontWeight: {
         semiBold: "550",

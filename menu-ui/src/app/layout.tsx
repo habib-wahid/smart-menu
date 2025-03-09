@@ -32,7 +32,7 @@ export default function RootLayout({
          <CartProvider>
           <div className="flex justify-center items-center min-h-screen bg-gray-100">
             <div className = "w-[400px] h-screen mx-auto border border-gray-300 rounded-3xl shadow-lg flex flex-col">
-            {children}
+               {children}
             </div>
             </div>
          </CartProvider>

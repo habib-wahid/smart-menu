@@ -7,13 +7,22 @@ import FrenchFry from '@/../public/FrenchFry.svg';
 import CocaCola from '@/../public/CocaCola.svg';
 import Toast from '@/../public/Toast.svg';
 
-export const MenuItem = () => {
+export interface ItemType {
+    id: number;
+    name: string;
+    tag: string;
+    price: string;
+    image: any;
+    mainImage: any;
+    description: string;
+}
+export const MenuItem = () : ItemType[] => {
     return [
         {
             id: 1,
             name: 'Chicken Burger',
             tag: 'Home',
-            price: '$299',
+            price: '$13.50',
             image: ChickenBurger,
             mainImage: Burger,
             description: 'Big juicy chicken burger with cheese, lettuce, tomato, onions and special sauce.',
@@ -22,7 +31,7 @@ export const MenuItem = () => {
             id: 2,
             name: 'Chicken Pizza',
             tag: '',
-            price: '$199',
+            price: '$15.50',
             image: ChickenPizza,
             mainImage: Burger,
             description: 'Big juicy chicken burger with cheese, lettuce, tomato, onions and special sauce',
@@ -31,7 +40,7 @@ export const MenuItem = () => {
             id: 3,
             name: 'Grill Chicken',
             tag: 'Home',
-            price: '$299',
+            price: '$8.50',
             image: GrillChicken,
             mainImage: Burger,
             description: 'Big juicy chicken burger with cheese, lettuce, tomato, onions and special sauce',
@@ -40,7 +49,7 @@ export const MenuItem = () => {
             id: 4,
             name: 'Food Plater',
             tag: 'Special',
-            price: '$299',
+            price: '$10.00',
             image: Platter,
             mainImage: Burger,
             description: 'Big juicy chicken burger with cheese, lettuce, tomato, onions and special sauce',
@@ -50,13 +59,13 @@ export const MenuItem = () => {
             id: 5,
             name: 'Food Plater',
             tag: 'Special',
-            price: '$299',
+            price: '$20.00',
             image: Platter,
             mainImage: Burger,
             description: 'Big juicy chicken burger with cheese, lettuce, tomato, onions and special sauce',
         }
     ]
-}
+} 
 
 export const AddOns = () => {
     return [
