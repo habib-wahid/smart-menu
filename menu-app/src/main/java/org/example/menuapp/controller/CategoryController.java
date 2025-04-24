@@ -1,7 +1,7 @@
 package org.example.menuapp.controller;
 
-import org.example.menuapp.dto.CategoryRequest;
-import org.example.menuapp.dto.CategoryResponseDto;
+import org.example.menuapp.dto.request.CategoryRequest;
+import org.example.menuapp.dto.response.CategoryResponseDto;
 import org.example.menuapp.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/category")
+@RequestMapping("/category")
 public class CategoryController {
 
     private final CategoryService categoryService;

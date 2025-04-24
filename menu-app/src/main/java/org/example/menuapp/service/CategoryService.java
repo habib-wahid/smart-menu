@@ -2,12 +2,12 @@ package org.example.menuapp.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.menuapp.config.FileStorageConfig;
-import org.example.menuapp.dto.CategoryRequest;
-import org.example.menuapp.dto.CategoryResponseDto;
+import org.example.menuapp.dto.request.CategoryRequest;
+import org.example.menuapp.dto.response.CategoryResponseDto;
 import org.example.menuapp.entity.Category;
 import org.example.menuapp.error.custom_exceptions.SmFileStorageException;
-import org.example.menuapp.error.messages.ExceptionMessages;
 import org.example.menuapp.error.custom_exceptions.SmResourceNotFoundException;
+import org.example.menuapp.error.messages.ExceptionMessages;
 import org.example.menuapp.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,8 +16,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -119,5 +122,24 @@ public class CategoryService {
             }
         }
         categoryRepository.deleteById(id);
+    }
+
+    public Category getCategoryById(Long id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new SmResourceNotFoundException(
+                        String.format(ExceptionMessages.RESOURCE_NOT_FOUND, "Category", id)));
+    }
+
+    public Set<Category> getAllCategoriesById(Set<Long> categoryIds) {
+        List<Category> categories = categoryRepository.findAllById(categoryIds);
+        Set<Long> itemIds = categories.stream()
+                .map(Category::getId)
+                .collect(Collectors.toSet());
+        categoryIds.removeAll(itemIds);
+        if (!categoryIds.isEmpty()) {
+            throw new SmResourceNotFoundException(
+                    String.format(ExceptionMessages.RESOURCE_NOT_FOUND, "Category", categoryIds));
+        }
+        return new HashSet<>(categories);
     }
 }

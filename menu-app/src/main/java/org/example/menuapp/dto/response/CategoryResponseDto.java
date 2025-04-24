@@ -1,4 +1,4 @@
-package org.example.menuapp.dto;
+package org.example.menuapp.dto.response;
 
 import lombok.*;
 

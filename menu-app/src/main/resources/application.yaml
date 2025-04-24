@@ -1,3 +1,5 @@
+
+
 spring:
   application:
     name: menu-app
@@ -18,5 +20,16 @@ spring:
   web:
     resources:
       static-locations: ./uploads/files
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
 file:
   location: ./uploads/files
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
