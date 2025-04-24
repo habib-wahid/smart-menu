@@ -7,6 +7,7 @@ import org.example.menuapp.dto.response.ItemResponse;
 import org.example.menuapp.entity.Category;
 import org.example.menuapp.entity.Item;
 import org.example.menuapp.error.custom_exceptions.SmFileStorageException;
+import org.example.menuapp.error.custom_exceptions.SmResourceNotFoundException;
 import org.example.menuapp.error.messages.ExceptionMessages;
 import org.example.menuapp.repository.ItemRepository;
 import org.springframework.stereotype.Service;
@@ -16,9 +17,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -81,5 +81,20 @@ public class ItemService {
                 .fullPathUrl(item.getFullPathUrl())
                 .rating(item.getRating())
                 .build();
+    }
+
+    public Set<Item> getAllItemsByIds(Set<Long> itemIds) {
+        List<Item> items = itemRepository.findAllById(itemIds);
+        Set<Long> ids = items.stream()
+                .map(Item::getId)
+                .collect(Collectors.toSet());
+        itemIds.removeAll(ids);
+        if (!itemIds.isEmpty()) {
+            List<Long> itemListIds = new ArrayList<>(itemIds);
+            throw new SmResourceNotFoundException(
+                   String.format(ExceptionMessages.RESOURCE_NOT_FOUND, "Item", itemListIds.getFirst())
+            );
+        }
+        return new HashSet<>(items);
     }
 }
