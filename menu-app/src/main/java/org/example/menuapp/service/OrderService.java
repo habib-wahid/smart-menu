@@ -26,16 +26,16 @@ public class OrderService {
 
     @Transactional
     public void placeOrder(OrderRequest orderRequest) {
-        Order order = Order.builder()
-                .userId(orderRequest.getUserId())
-                .orderStatus(OrderStatus.PLACED)
-                .totalPrice(orderRequest.getTotalPrice())
-                .isPaid(false)
-                .isServed(false)
-                .tableNo(orderRequest.getTableNumber())
-                .orderTime(LocalDateTime.now())
-                .updateTime(LocalDateTime.now())
-                .build();
+        Order order = new Order();
+        order.setUserId(orderRequest.getUserId());
+        order.setOrderStatus(OrderStatus.PLACED);
+        order.setTotalPrice(orderRequest.getTotalPrice());
+        order.setIsServed(false);
+        order.setIsPaid(false);
+        order.setTableNo(orderRequest.getTableNumber());
+        order.setOrderTime(LocalDateTime.now());
+        order.setUpdateTime(LocalDateTime.now());
+
 
         double totalPrice = 0.0;
 
@@ -55,7 +55,6 @@ public class OrderService {
                         .build();
                 orderItem.addOrderAddon(orderAddon);
                 itemTotalPrice += orderAddon.getPrice();
-
             }
 
             orderItem.setPrice(itemTotalPrice);
