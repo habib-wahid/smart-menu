@@ -7,6 +7,7 @@ import org.example.menuapp.dto.request.AddonResponse;
 import org.example.menuapp.entity.AddOn;
 import org.example.menuapp.entity.Item;
 import org.example.menuapp.error.custom_exceptions.SmFileStorageException;
+import org.example.menuapp.error.custom_exceptions.SmResourceNotFoundException;
 import org.example.menuapp.error.messages.ExceptionMessages;
 import org.example.menuapp.repository.AddOnRepository;
 import org.springframework.stereotype.Service;
@@ -83,5 +84,11 @@ public class AddonService {
                 .fullPathUrl(addOn.getFullPathUrl())
                 .rating(addOn.getRating())
                 .build();
+    }
+
+    public AddOn getAddOnById(Long id) {
+        return addOnRepository.findById(id).orElseThrow(
+                () -> new SmResourceNotFoundException(
+                        String.format(ExceptionMessages.RESOURCE_NOT_FOUND, "AddOn", id)));
     }
 }

@@ -97,4 +97,11 @@ public class ItemService {
         }
         return new HashSet<>(items);
     }
+
+    public Item getItemById(Long id) {
+        return itemRepository.findById(id).orElseThrow(
+                () -> new SmResourceNotFoundException(String.format(
+                        ExceptionMessages.RESOURCE_NOT_FOUND, "Item", id
+                )));
+    }
 }
