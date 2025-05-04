@@ -3,8 +3,12 @@ package org.example.menuapp.service;
 import org.example.menuapp.dto.request.OrderAddonRequest;
 import org.example.menuapp.dto.request.OrderItemRequest;
 import org.example.menuapp.dto.request.OrderRequest;
+import org.example.menuapp.dto.request.StatusUpdateRequest;
 import org.example.menuapp.entity.*;
 import org.example.menuapp.enums.OrderStatus;
+import org.example.menuapp.error.custom_exceptions.OrderDeletionException;
+import org.example.menuapp.error.custom_exceptions.SmResourceNotFoundException;
+import org.example.menuapp.error.messages.ExceptionMessages;
 import org.example.menuapp.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +32,7 @@ public class OrderService {
     public void placeOrder(OrderRequest orderRequest) {
         Order order = new Order();
         order.setUserId(orderRequest.getUserId());
-        order.setOrderStatus(OrderStatus.PLACED);
+        order.setOrderStatus(OrderStatus.PLACED.getStatus());
         order.setTotalPrice(orderRequest.getTotalPrice());
         order.setIsServed(false);
         order.setIsPaid(false);
@@ -65,5 +69,29 @@ public class OrderService {
         order.setTotalPrice(totalPrice);
         orderRepository.save(order);
 
+    }
+
+    public void updateOrderStatus(Long orderId, StatusUpdateRequest statusUpdateRequest) {
+        Order order = getOrderById(orderId);
+        order.setOrderStatus(statusUpdateRequest.getStatus().getStatus());
+        orderRepository.save(order);
+    }
+
+    @Transactional
+    public void deleteOrder(Long orderId) {
+        Order order = getOrderById(orderId);
+        if (order.getOrderStatus().equals(OrderStatus.PROCESSING.getStatus())
+            || order.getOrderStatus().equals(OrderStatus.COMPLETED.getStatus())
+        ) {
+            throw new OrderDeletionException(
+                    String.format(ExceptionMessages.ORDER_NOT_ABLE_TO_DELETE, order.getOrderStatus()));
+        }
+        orderRepository.delete(order);
+    }
+
+    private Order getOrderById(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new SmResourceNotFoundException(
+                        String.format(ExceptionMessages.RESOURCE_NOT_FOUND, "Order", orderId)));
     }
 }

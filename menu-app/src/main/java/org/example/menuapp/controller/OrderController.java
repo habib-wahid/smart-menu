@@ -1,10 +1,13 @@
 package org.example.menuapp.controller;
 
 import org.example.menuapp.dto.request.OrderRequest;
+import org.example.menuapp.dto.request.StatusUpdateRequest;
 import org.example.menuapp.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/order")
@@ -21,5 +24,18 @@ public class OrderController {
     public ResponseEntity<Void> placeOrder(@RequestBody OrderRequest orderRequest) {
         orderService.placeOrder(orderRequest);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PatchMapping("/{orderId}/status")
+    public void updateOrderStatus(
+            @PathVariable Long orderId,
+            @RequestBody StatusUpdateRequest statusUpdateRequest) {
+        orderService.updateOrderStatus(orderId, statusUpdateRequest);
+    }
+
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<Map<String, String>> deleteOrder(@PathVariable Long orderId) {
+        orderService.deleteOrder(orderId);
+        return ResponseEntity.ok(Map.of("message", "Order deleted"));
     }
 }

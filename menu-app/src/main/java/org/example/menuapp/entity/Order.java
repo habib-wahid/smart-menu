@@ -20,8 +20,7 @@ public class Order {
     private Long id;
 
     private Long userId;
-    @Enumerated(EnumType.STRING)
-    private OrderStatus orderStatus;
+    private String orderStatus;
     private Double totalPrice;
     private Boolean isPaid;
     private Boolean isServed;
