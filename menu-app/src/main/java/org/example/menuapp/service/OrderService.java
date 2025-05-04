@@ -50,15 +50,18 @@ public class OrderService {
             orderItem.setQuantity(orderItemRequest.getQuantity());
             orderItem.setPrice(item.getPrice() * orderItemRequest.getQuantity());
             double itemTotalPrice = orderItem.getPrice();
-            for (OrderAddonRequest addonRequest : orderItemRequest.getOrderAddons()) {
-                AddOn addOn = addonService.getAddOnById(addonRequest.getAddonId());
-                OrderAddon orderAddon = OrderAddon.builder()
-                        .addOn(addOn)
-                        .quantity(addonRequest.getQuantity())
-                        .price(addonRequest.getQuantity() * addOn.getPrice())
-                        .build();
-                orderItem.addOrderAddon(orderAddon);
-                itemTotalPrice += orderAddon.getPrice();
+
+            if (orderItemRequest.getOrderAddons() != null) {
+                for (OrderAddonRequest addonRequest : orderItemRequest.getOrderAddons()) {
+                    AddOn addOn = addonService.getAddOnById(addonRequest.getAddonId());
+                    OrderAddon orderAddon = OrderAddon.builder()
+                            .addOn(addOn)
+                            .quantity(addonRequest.getQuantity())
+                            .price(addonRequest.getQuantity() * addOn.getPrice())
+                            .build();
+                    orderItem.addOrderAddon(orderAddon);
+                    itemTotalPrice += orderAddon.getPrice();
+                }
             }
 
             orderItem.setPrice(itemTotalPrice);

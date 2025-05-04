@@ -1,5 +1,6 @@
 package org.example.menuapp.controller;
 
+import jakarta.validation.Valid;
 import org.example.menuapp.dto.request.OrderRequest;
 import org.example.menuapp.dto.request.StatusUpdateRequest;
 import org.example.menuapp.service.OrderService;
@@ -21,9 +22,9 @@ public class OrderController {
 
 
     @PostMapping
-    public ResponseEntity<Void> placeOrder(@RequestBody OrderRequest orderRequest) {
+    public ResponseEntity<Void> placeOrder(@Valid @RequestBody OrderRequest orderRequest) {
         orderService.placeOrder(orderRequest);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PatchMapping("/{orderId}/status")
