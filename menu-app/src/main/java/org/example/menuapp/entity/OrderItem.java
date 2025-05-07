@@ -9,14 +9,14 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+@Entity(name = "order_item")
 @AllArgsConstructor @NoArgsConstructor
 @Getter @Setter
 public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_item_seq")
-    @SequenceGenerator(name = "order_item_seq", sequenceName = "order_item_sequence", allocationSize = 50)
+    @SequenceGenerator(name = "order_item_seq", sequenceName = "order_item_sequence", allocationSize = 1)
     private Long id;
 
     @ManyToOne
@@ -27,8 +27,10 @@ public class OrderItem {
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
 
+    @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
+    @Column(name = "price", nullable = false)
     private Double price;
 
     @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL, orphanRemoval = true)

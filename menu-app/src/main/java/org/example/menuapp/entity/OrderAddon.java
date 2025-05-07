@@ -3,7 +3,7 @@ package org.example.menuapp.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
+@Entity(name = "order_addon")
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
 @Builder
@@ -11,7 +11,7 @@ public class OrderAddon {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_addon_seq")
-    @SequenceGenerator(name = "order_addon_seq", sequenceName = "order_addon_sequence", allocationSize = 50)
+    @SequenceGenerator(name = "order_addon_seq", sequenceName = "order_addon_sequence", allocationSize = 1)
     private Long id;
 
     @ManyToOne
@@ -22,8 +22,10 @@ public class OrderAddon {
     @JoinColumn(name = "addon_id", nullable = false)
     private AddOn addOn;
 
+    @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
+    @Column(name = "price", nullable = false)
     private Double price;
 
 }
