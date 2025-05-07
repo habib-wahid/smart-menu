@@ -11,11 +11,15 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
 
   web:
     resources:
@@ -35,3 +39,4 @@ server:
     context-path: /api
 springdoc:
   show-actuator: true
+

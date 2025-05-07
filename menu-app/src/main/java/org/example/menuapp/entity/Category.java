@@ -12,11 +12,20 @@ import java.time.LocalDateTime;
 @Builder
 public class Category {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "category_seq")
+    @SequenceGenerator(name = "category_seq", sequenceName = "category_sequence", allocationSize = 1)
     private Long id;
+
+    @Column(name = "category_name", nullable = false)
     private String name;
+
+    @Column(name = "description")
     private String description;
+
+    @Column(name = "file_path")
     private String imageUrl;
+
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @PrePersist
