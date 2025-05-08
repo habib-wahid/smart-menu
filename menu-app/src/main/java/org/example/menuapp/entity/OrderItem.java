@@ -30,8 +30,11 @@ public class OrderItem {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @Column(name = "price", nullable = false)
-    private Double price;
+    @Column(name = "total_price", nullable = false)
+    private Double totalPrice;
+
+    @Column(name = "total_addon_price")
+    private Double totalAddonPrice;
 
     @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderAddon> orderAddons = new ArrayList<>();

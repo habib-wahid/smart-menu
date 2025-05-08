@@ -91,4 +91,5 @@ public class AddonService {
                 () -> new SmResourceNotFoundException(
                         String.format(ExceptionMessages.RESOURCE_NOT_FOUND, "AddOn", id)));
     }
+
 }

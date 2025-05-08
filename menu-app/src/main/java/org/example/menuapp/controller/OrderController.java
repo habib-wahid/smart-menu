@@ -1,8 +1,10 @@
 package org.example.menuapp.controller;
 
 import jakarta.validation.Valid;
+import lombok.Getter;
 import org.example.menuapp.dto.request.OrderRequest;
 import org.example.menuapp.dto.request.StatusUpdateRequest;
+import org.example.menuapp.dto.response.OrderResponse;
 import org.example.menuapp.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +24,9 @@ public class OrderController {
 
 
     @PostMapping
-    public ResponseEntity<Void> placeOrder(@Valid @RequestBody OrderRequest orderRequest) {
-        orderService.placeOrder(orderRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<OrderResponse> placeOrder(@Valid @RequestBody OrderRequest orderRequest) {
+        OrderResponse orderResponse = orderService.placeOrder(orderRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderResponse);
     }
 
     @PatchMapping("/{orderId}/status")

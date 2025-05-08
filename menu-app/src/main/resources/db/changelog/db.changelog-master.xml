@@ -9,4 +9,5 @@
     <include file="db/changelog/changes/01-create-initial-schema.xml"/>
     <include file="db/changelog/changes/02-create-addon-schema.xml"/>
     <include file="db/changelog/changes/03-create-customer-order-schema.xml"/>
+    <include file="db/changelog/changes/04-alter-order-schema.xml"/>
 </databaseChangeLog>

@@ -27,6 +27,12 @@ public class Order {
     @Column(name = "total_price", nullable = false)
     private Double totalPrice;
 
+    @Column(name = "total_item_price", nullable = false)
+    private Double totalItemPrice;
+
+    @Column(name = "total_addon_price")
+    private Double totalAddonPrice;
+
     @Column(name = "paid")
     private Boolean isPaid;
 
