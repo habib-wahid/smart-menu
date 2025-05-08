@@ -33,6 +33,9 @@ public class OrderItem {
     @Column(name = "total_price", nullable = false)
     private Double totalPrice;
 
+    @Column(name = "total_item_price")
+    private Double totalItemPrice;
+
     @Column(name = "total_addon_price")
     private Double totalAddonPrice;
 

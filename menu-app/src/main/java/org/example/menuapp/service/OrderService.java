@@ -38,7 +38,6 @@ public class OrderService {
         Order order = new Order();
         order.setUserId(orderRequest.getUserId());
         order.setOrderStatus(OrderStatus.PLACED.getStatus());
-        order.setTotalPrice(orderRequest.getTotalPrice());
         order.setIsServed(false);
         order.setIsPaid(false);
         order.setTableNo(orderRequest.getTableNumber());
@@ -46,16 +45,20 @@ public class OrderService {
         order.setUpdateTime(LocalDateTime.now());
 
         double totalPrice = 0.0;
+        double totalItemPrice = 0.0;
+        double totalAddonPrice = 0.0;
 
         for (OrderItemRequest orderItemRequest : orderRequest.getOrderItems()) {
             Item item = itemService.getItemById(orderItemRequest.getItemId());
             OrderItem orderItem = new OrderItem();
             orderItem.setItem(item);
             orderItem.setQuantity(orderItemRequest.getQuantity());
-            orderItem.setTotalPrice(item.getPrice() * orderItemRequest.getQuantity());
-            double itemTotalPrice = orderItem.getTotalPrice();
+            double currentItemTotalPrice = orderItemRequest.getQuantity() * item.getPrice();
+            orderItem.setTotalItemPrice(currentItemTotalPrice);
+            totalItemPrice += currentItemTotalPrice;
 
             if (orderItemRequest.getOrderAddons() != null) {
+                double totalAddonPriceForItem = 0;
                 for (OrderAddonRequest addonRequest : orderItemRequest.getOrderAddons()) {
                     AddOn addOn = addonService.getAddOnById(addonRequest.getAddonId());
                     OrderAddon orderAddon = OrderAddon.builder()
@@ -64,16 +67,18 @@ public class OrderService {
                             .price(addonRequest.getQuantity() * addOn.getPrice())
                             .build();
                     orderItem.addOrderAddon(orderAddon);
-                    itemTotalPrice += orderAddon.getPrice();
+                    totalAddonPriceForItem += addonRequest.getQuantity() * addOn.getPrice();
                 }
+                totalAddonPrice += totalAddonPriceForItem;
+                orderItem.setTotalAddonPrice(totalAddonPriceForItem);
+                orderItem.setTotalPrice(currentItemTotalPrice + totalAddonPriceForItem);
             }
-
-            orderItem.setTotalPrice(itemTotalPrice);
             order.addOrderItem(orderItem);
-            totalPrice += itemTotalPrice;
         }
 
-        order.setTotalPrice(totalPrice);
+        order.setTotalPrice(totalItemPrice + totalAddonPrice);
+        order.setTotalItemPrice(totalItemPrice);
+        order.setTotalAddonPrice(totalAddonPrice);
         Order response = orderRepository.save(order);
         return mapToOrderResponse(response);
     }
