@@ -26,7 +26,7 @@ public class AddOn {
     @Column(name = "price", nullable = false)
     private Double price;
 
-    @Column(name = "filePath")
+    @Column(name = "file_path")
     private String filePath;
 
     @Column(name = "full_path")

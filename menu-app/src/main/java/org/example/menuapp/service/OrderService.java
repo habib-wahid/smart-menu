@@ -44,7 +44,6 @@ public class OrderService {
         order.setOrderTime(LocalDateTime.now());
         order.setUpdateTime(LocalDateTime.now());
 
-        double totalPrice = 0.0;
         double totalItemPrice = 0.0;
         double totalAddonPrice = 0.0;
 

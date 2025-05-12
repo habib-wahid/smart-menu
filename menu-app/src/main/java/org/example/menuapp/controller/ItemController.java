@@ -21,6 +21,12 @@ public class ItemController {
         this.itemService = itemService;
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ItemResponse> getItem(@PathVariable Long id) {
+        ItemResponse itemResponse = itemService.getItem(id);
+        return ResponseEntity.status(HttpStatus.OK).body(itemResponse);
+    }
+
     @GetMapping
     public ResponseEntity<List<ItemResponse>> getItems() {
         return ResponseEntity.ok(itemService.getAllItems());

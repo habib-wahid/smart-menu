@@ -1,7 +1,7 @@
 package org.example.menuapp.controller;
 
 import org.example.menuapp.dto.request.AddonRequest;
-import org.example.menuapp.dto.request.AddonResponse;
+import org.example.menuapp.dto.response.AddonResponse;
 import org.example.menuapp.service.AddonService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

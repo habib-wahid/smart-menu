@@ -3,12 +3,13 @@ package org.example.menuapp.service;
 import lombok.extern.slf4j.Slf4j;
 import org.example.menuapp.config.FileStorageConfig;
 import org.example.menuapp.dto.request.AddonRequest;
-import org.example.menuapp.dto.request.AddonResponse;
+import org.example.menuapp.dto.response.AddonResponse;
 import org.example.menuapp.entity.AddOn;
 import org.example.menuapp.entity.Item;
 import org.example.menuapp.error.custom_exceptions.SmFileStorageException;
 import org.example.menuapp.error.custom_exceptions.SmResourceNotFoundException;
 import org.example.menuapp.error.messages.ExceptionMessages;
+import org.example.menuapp.mapper.AddonMapper;
 import org.example.menuapp.repository.AddOnRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -28,11 +30,13 @@ public class AddonService {
     private final AddOnRepository addOnRepository;
     private final FileStorageConfig fileStorageConfig;
     private final ItemService itemService;
+    private final AddonMapper addonMapper;
 
-    public AddonService(AddOnRepository addOnRepository, FileStorageConfig fileStorageConfig, ItemService itemService) {
+    public AddonService(AddOnRepository addOnRepository, FileStorageConfig fileStorageConfig, ItemService itemService, AddonMapper addonMapper) {
         this.addOnRepository = addOnRepository;
         this.fileStorageConfig = fileStorageConfig;
         this.itemService = itemService;
+        this.addonMapper = addonMapper;
     }
 
     public void createAddOn(AddonRequest addonRequest, MultipartFile file) {
@@ -70,20 +74,8 @@ public class AddonService {
     public List<AddonResponse> getAllAddons() {
         List<AddOn> addOnList = addOnRepository.findAll();
         return addOnList.stream()
-                .map(this::mapToAddonResponse)
+                .map(addonMapper::mapToAddonResponse)
                 .toList();
-    }
-
-    private AddonResponse mapToAddonResponse(AddOn addOn) {
-        return AddonResponse.builder()
-                .id(addOn.getId())
-                .name(addOn.getName())
-                .description(addOn.getDescription())
-                .price(addOn.getPrice())
-                .filePath(addOn.getFilePath())
-                .fullPathUrl(addOn.getFullPathUrl())
-                .rating(addOn.getRating())
-                .build();
     }
 
     public AddOn getAddOnById(Long id) {

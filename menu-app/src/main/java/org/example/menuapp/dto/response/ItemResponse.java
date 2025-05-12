@@ -2,6 +2,8 @@ package org.example.menuapp.dto.response;
 
 import lombok.*;
 
+import java.util.List;
+
 @AllArgsConstructor @NoArgsConstructor
 @Getter @Setter
 @Builder
@@ -13,4 +15,5 @@ public class ItemResponse {
     private String filePath;
     private String fullPathUrl;
     private Double rating;
+    List<AddonResponse> addons;
 }

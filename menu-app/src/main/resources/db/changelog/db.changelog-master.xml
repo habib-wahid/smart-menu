@@ -11,4 +11,5 @@
     <include file="db/changelog/changes/03-create-customer-order-schema.xml"/>
     <include file="db/changelog/changes/04-alter-order-schema.xml"/>
     <include file="db/changelog/changes/05-alter-order-item-schema.xml"/>
+    <include file="db/changelog/changes/06-rename-addon-file-path-column.xml"/>
 </databaseChangeLog>
