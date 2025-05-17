@@ -10,7 +10,6 @@ import java.util.Set;
 
 @Getter @Setter
 public class OrderRequest {
-    private String orderId;
     private Long userId;
 
     @NotNull(message = "Total price can not be null")

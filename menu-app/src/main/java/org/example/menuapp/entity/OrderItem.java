@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,8 @@ public class OrderItem {
     @Column(name = "total_addon_price")
     private Double totalAddonPrice;
 
-    @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "orderItem", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 10)
     private List<OrderAddon> orderAddons = new ArrayList<>();
 
     public void addOrderAddon(OrderAddon orderAddon) {
@@ -47,9 +49,9 @@ public class OrderItem {
         orderAddon.setOrderItem(this);
     }
 
-    public void removeOrderAddon(OrderAddon orderAddon) {
-        orderAddons.remove(orderAddon);
-        orderAddon.setOrderItem(null);
+    public void removeOrderAddon(List<OrderAddon> addons) {
+        orderAddons.removeAll(addons);
+        addons.forEach(addon -> addon.setOrderItem(null));
     }
 
 }

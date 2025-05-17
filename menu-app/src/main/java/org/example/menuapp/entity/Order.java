@@ -60,9 +60,9 @@ public class Order {
         orderItem.setOrder(this);
     }
 
-    public void removeOrderItem(OrderItem orderItem) {
-        orderItems.remove(orderItem);
-        orderItem.setOrder(null);
+    public void removeOrderItem(List<OrderItem> items) {
+        orderItems.removeAll(items);
+        items.forEach(item -> item.setOrder(null));
     }
 
 }

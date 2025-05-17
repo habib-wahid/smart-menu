@@ -6,6 +6,7 @@ import lombok.Setter;
 
 @Getter @Setter
 public class OrderAddonRequest {
+    private Long orderAddonId;
     @NotNull(message = "Addon must have an ID")
     private Long addonId;
     private Long orderItemId;
