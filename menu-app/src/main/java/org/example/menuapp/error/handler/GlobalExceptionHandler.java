@@ -1,6 +1,7 @@
 package org.example.menuapp.error.handler;
 
 import org.example.menuapp.error.custom_exceptions.SmFileStorageException;
+import org.example.menuapp.error.custom_exceptions.SmUpdateNotAllowedException;
 import org.example.menuapp.error.custom_exceptions.SmResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,5 +35,10 @@ public class GlobalExceptionHandler {
         error.put("message", ex.getMessage());
         error.put("error", "File upload failed");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
+    @ExceptionHandler(SmUpdateNotAllowedException.class)
+    public ResponseEntity<String> handleOrderProcessingException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 }

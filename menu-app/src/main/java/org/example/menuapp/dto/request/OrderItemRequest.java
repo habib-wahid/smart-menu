@@ -20,6 +20,5 @@ public class OrderItemRequest {
 
     private Long price;
 
-    @Valid
     private Set<OrderAddonRequest> orderAddons;
 }
