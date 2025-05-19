@@ -1,7 +1,6 @@
 package org.example.menuapp.controller;
 
 import jakarta.validation.Valid;
-import lombok.Getter;
 import org.example.menuapp.dto.request.OrderRequest;
 import org.example.menuapp.dto.request.StatusUpdateRequest;
 import org.example.menuapp.dto.response.OrderResponse;

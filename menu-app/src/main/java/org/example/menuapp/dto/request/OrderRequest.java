@@ -12,10 +12,6 @@ import java.util.Set;
 public class OrderRequest {
     private Long userId;
 
-    @NotNull(message = "Total price can not be null")
-    @Positive
-    private Double totalPrice;
-
     @NotNull(message = "Must provide table number")
     @Positive
     private Integer tableNumber;
