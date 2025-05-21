@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -21,6 +22,12 @@ public class OrderController {
         this.orderService = orderService;
     }
 
+
+    @GetMapping("/all-order")
+    public ResponseEntity<List<OrderResponse>> getAllPendingOrders() {
+        List<OrderResponse> allOrders = orderService.getAllPendingOrders();
+        return ResponseEntity.status(HttpStatus.OK).body(allOrders);
+    }
 
     @PostMapping
     public ResponseEntity<OrderResponse> placeOrder(@Valid @RequestBody OrderRequest orderRequest) {

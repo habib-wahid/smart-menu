@@ -14,8 +14,8 @@ import org.example.menuapp.entity.OrderItem;
 public class OrderAddonResponse {
     private Long orderAddonId;
     private Long orderItemId;
-    private Long addOnId;
-    private String addOnName;
+    private Long addonId;
+    private String addonName;
     private Double addonUnitPrice;
     private Integer quantity;
     private Double totalPrice;

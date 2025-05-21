@@ -8,7 +8,9 @@ import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity(name = "order_item")
 @AllArgsConstructor @NoArgsConstructor
@@ -42,7 +44,7 @@ public class OrderItem {
 
     @OneToMany(mappedBy = "orderItem", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @BatchSize(size = 10)
-    private List<OrderAddon> orderAddons = new ArrayList<>();
+    private Set<OrderAddon> orderAddons = new HashSet<>();
 
     public void addOrderAddon(OrderAddon orderAddon) {
         orderAddons.add(orderAddon);

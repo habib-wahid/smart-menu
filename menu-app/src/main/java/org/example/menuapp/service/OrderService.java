@@ -1,5 +1,6 @@
 package org.example.menuapp.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.menuapp.dto.request.*;
 import org.example.menuapp.dto.response.OrderAddonResponse;
 import org.example.menuapp.dto.response.OrderItemResponse;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class OrderService {
 
@@ -151,6 +153,8 @@ public class OrderService {
             OrderAddon currentOrderAddon = currentOrderItem.getOrderAddons().stream()
                     .filter(addon -> Objects.equals(addon.getId(), addonRequest.getOrderAddonId()))
                     .findFirst().orElse(null);
+
+            log.info("Addon id : {}",  addonRequest.getOrderAddonId());
             AddOn addOn = addonService.getAddOnById(addonRequest.getAddonId());
 
             if (currentOrderAddon == null) {
@@ -235,13 +239,13 @@ public class OrderService {
     private Item resolveItem(OrderItemRequest orderItemRequest, Item requestItem) {
         return requestItem != null ? requestItem : itemService.getItemById(orderItemRequest.getItemId());
     }
-    private List<OrderItemResponse> getOrderItemList(List<OrderItem> orderItemList) {
+    private List<OrderItemResponse> getOrderItemList(Set<OrderItem> orderItemList) {
         List<OrderItemResponse> orderItemResponseList = new ArrayList<>();
         orderItemList.forEach(orderItem -> orderItemResponseList.add(mapToOrderItemResponse(orderItem)));
         return orderItemResponseList;
     }
 
-    private List<OrderAddonResponse> getOrderAddonList(List<OrderAddon> orderAddonList) {
+    private List<OrderAddonResponse> getOrderAddonList(Set<OrderAddon> orderAddonList) {
         List<OrderAddonResponse> orderAddonResponseList = new ArrayList<>();
         orderAddonList.forEach(orderAddon -> orderAddonResponseList.add(mapToOrderAddonResponse(orderAddon)));
         return orderAddonResponseList;
@@ -264,8 +268,8 @@ public class OrderService {
         return OrderAddonResponse.builder()
                 .orderAddonId(orderAddon.getId())
                 .orderItemId(orderAddon.getOrderItem().getId())
-                .addOnId(orderAddon.getAddOn().getId())
-                .addOnName(orderAddon.getAddOn().getName())
+                .addonId(orderAddon.getAddOn().getId())
+                .addonName(orderAddon.getAddOn().getName())
                 .addonUnitPrice(orderAddon.getAddOn().getPrice())
                 .quantity(orderAddon.getQuantity())
                 .totalPrice(orderAddon.getPrice())
@@ -321,5 +325,10 @@ public class OrderService {
 
         currentOrderItem.removeOrderAddon(addonsNeedToDelete);
 
+    }
+
+    public List<OrderResponse> getAllPendingOrders() {
+        List<Order> allOrders =  orderRepository.findAllByOrderStatus(OrderStatus.PLACED.getStatus());
+        return allOrders.stream().map(this::mapToOrderResponse).collect(Collectors.toList());
     }
 }
