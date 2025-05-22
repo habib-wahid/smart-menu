@@ -2,6 +2,10 @@ package org.example.menuapp.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.envers.AuditTable;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
+
 
 @Entity(name = "order_addon")
 @Getter @Setter

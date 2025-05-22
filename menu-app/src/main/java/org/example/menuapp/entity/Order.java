@@ -2,6 +2,10 @@ package org.example.menuapp.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.envers.AuditTable;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,6 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Audited
+@AuditTable(value = "customer_order_audit")
 @Entity(name = "customer_order")
 @AllArgsConstructor @NoArgsConstructor
 @Getter @Setter
@@ -54,6 +60,7 @@ public class Order {
     private LocalDateTime deliveryTime;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @NotAudited
     private Set<OrderItem> orderItems = new HashSet<>();
 
 
