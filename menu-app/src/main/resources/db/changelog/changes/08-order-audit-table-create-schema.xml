@@ -12,24 +12,11 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="user_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="order_status" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="total_price" type="double precision">
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="total_item_price" type="double precision">
-                <constraints nullable="false"/>
-            </column>
-
+            <column name="user_id" type="bigint" />
+            <column name="order_status" type="varchar(255)" />
+            <column name="total_price" type="double precision" />
+            <column name="total_item_price" type="double precision"/>
             <column name="total_addon_price" type="double precision"/>
-
             <column name="paid" type="boolean"/>
             <column name="served" type="boolean"/>
             <column name="table_no" type="int"/>

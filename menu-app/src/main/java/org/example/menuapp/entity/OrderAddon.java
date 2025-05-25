@@ -7,6 +7,8 @@ import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
 
+@Audited
+@AuditTable(value = "order_addon_audit")
 @Entity(name = "order_addon")
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
@@ -22,6 +24,7 @@ public class OrderAddon {
     @JoinColumn(name = "order_item_id", nullable = false)
     private OrderItem orderItem;
 
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @ManyToOne
     @JoinColumn(name = "addon_id", nullable = false)
     private AddOn addOn;

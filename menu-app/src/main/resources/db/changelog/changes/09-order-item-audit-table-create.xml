@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="create-order-item-audit-table" author="habib-wahid">
+        <createTable tableName="order_item_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="order_id" type="bigint"/>
+            <column name="item_id" type="bigint"/>
+            <column name="quantity" type="int"/>
+            <column name="total_price" type="double precision"/>
+            <column name="total_item_price" type="double precision"/>
+            <column name="total_addon_price" type="double precision"/>
+            <column name="rev" type="int">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="revtype" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="order_item_audit"
+                baseColumnNames="rev"
+                constraintName="fk_order_item_audit_rev"
+                referencedTableName="revinfo"
+                referencedColumnNames="rev"/>
+    </changeSet>
+
+    <changeSet id="create-order-addon-audit-table" author="habib-wahid">
+        <createTable tableName="order_addon_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order_item_id" type="bigint"/>
+            <column name="addon_id" type="bigint"/>
+            <column name="quantity" type="int"/>
+            <column name="price" type="double precision"/>
+
+            <!-- Envers metadata -->
+            <column name="rev" type="int">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="revtype" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- FK to revinfo table -->
+        <addForeignKeyConstraint
+                baseTableName="order_addon_audit"
+                baseColumnNames="rev"
+                constraintName="fk_order_addon_audit_rev"
+                referencedTableName="revinfo"
+                referencedColumnNames="rev"/>
+    </changeSet>
+
+
+</databaseChangeLog>

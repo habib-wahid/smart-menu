@@ -14,4 +14,5 @@
     <include file="db/changelog/changes/06-rename-addon-file-path-column.xml"/>
     <include file="db/changelog/changes/07-audit-table-seq-create-schema.xml"/>
     <include file="db/changelog/changes/08-order-audit-table-create-schema.xml"/>
+    <include file="db/changelog/changes/09-order-item-audit-table-create.xml"/>
 </databaseChangeLog>
