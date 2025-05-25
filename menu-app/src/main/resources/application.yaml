@@ -37,3 +37,17 @@ server:
 springdoc:
   show-actuator: true
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+  endpoint:
+    prometheus:
+      access: unrestricted
+
+  metrics:
+    export:
+      prometheus:
+        enabled: true
