@@ -9,6 +9,7 @@ import org.example.menuapp.error.custom_exceptions.SmFileStorageException;
 import org.example.menuapp.error.custom_exceptions.SmResourceNotFoundException;
 import org.example.menuapp.error.messages.ExceptionMessages;
 import org.example.menuapp.repository.CategoryRepository;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -142,4 +143,10 @@ public class CategoryService {
         }
         return new HashSet<>(categories);
     }
+
+    public CategoryResponseDto getSpecificCategory(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId).orElse(null);
+        return mapToCategoryResponseDto(category);
+    }
+
 }

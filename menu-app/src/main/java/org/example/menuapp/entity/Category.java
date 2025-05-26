@@ -2,10 +2,14 @@ package org.example.menuapp.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "category_cache")
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
