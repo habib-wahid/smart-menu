@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+
+
 @RestController
 @RequestMapping("/order")
 public class OrderController {
@@ -21,6 +23,8 @@ public class OrderController {
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
+
+    //todo need two apis. 1. Get all orders of a customer based on placed, processing, finish. 2. Get order details of a customer order
 
 
     @GetMapping("/all-order")

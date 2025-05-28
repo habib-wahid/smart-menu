@@ -12,6 +12,7 @@ import org.example.menuapp.error.custom_exceptions.SmUpdateNotAllowedException;
 import org.example.menuapp.error.custom_exceptions.SmResourceNotFoundException;
 import org.example.menuapp.error.messages.ExceptionMessages;
 import org.example.menuapp.repository.OrderRepository;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,11 +27,13 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final AddonService addonService;
     private final ItemService itemService;
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    public OrderService(OrderRepository orderRepository, AddonService addonService, ItemService itemService) {
+    public OrderService(OrderRepository orderRepository, AddonService addonService, ItemService itemService, RedisTemplate<String, Object> redisTemplate) {
         this.orderRepository = orderRepository;
         this.addonService = addonService;
         this.itemService = itemService;
+        this.redisTemplate = redisTemplate;
     }
 
     @Transactional
@@ -46,11 +49,17 @@ public class OrderService {
             order.addOrderItem(orderItem);
         }
 
+
         order.setTotalPrice(totalItemPrice + totalAddonPrice);
         order.setTotalItemPrice(totalItemPrice);
         order.setTotalAddonPrice(totalAddonPrice);
         Order response = orderRepository.save(order);
+        cacheOrderDetails(response);
         return mapToOrderResponse(response);
+    }
+
+    private void cacheOrderDetails(Order order) {
+        redisTemplate.opsForValue().set("order:" + order.getId(), order.getOrderStatus());
     }
 
     @Transactional
