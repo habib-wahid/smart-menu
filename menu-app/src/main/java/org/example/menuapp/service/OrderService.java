@@ -1,6 +1,11 @@
 package org.example.menuapp.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.example.menuapp.config.ConstantKeys;
+import org.example.menuapp.dto.redis.OrderAddonSummary;
+import org.example.menuapp.dto.redis.OrderItemSummary;
+import org.example.menuapp.dto.redis.OrderSummary;
 import org.example.menuapp.dto.request.*;
 import org.example.menuapp.dto.response.OrderAddonResponse;
 import org.example.menuapp.dto.response.OrderItemResponse;
@@ -16,6 +21,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,12 +34,14 @@ public class OrderService {
     private final AddonService addonService;
     private final ItemService itemService;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final ObjectMapper objectMapper;
 
-    public OrderService(OrderRepository orderRepository, AddonService addonService, ItemService itemService, RedisTemplate<String, Object> redisTemplate) {
+    public OrderService(OrderRepository orderRepository, AddonService addonService, ItemService itemService, RedisTemplate<String, Object> redisTemplate, ObjectMapper objectMapper) {
         this.orderRepository = orderRepository;
         this.addonService = addonService;
         this.itemService = itemService;
         this.redisTemplate = redisTemplate;
+        this.objectMapper = objectMapper;
     }
 
     @Transactional
@@ -54,13 +62,14 @@ public class OrderService {
         order.setTotalItemPrice(totalItemPrice);
         order.setTotalAddonPrice(totalAddonPrice);
         Order response = orderRepository.save(order);
-        cacheOrderDetails(response);
+        try {
+            cacheOrderDetails(response);
+        } catch (Exception e) {
+            log.error("Failed to cache order details", e);
+        }
         return mapToOrderResponse(response);
     }
 
-    private void cacheOrderDetails(Order order) {
-        redisTemplate.opsForValue().set("order:" + order.getId(), order.getOrderStatus());
-    }
 
     @Transactional
     public OrderResponse updateOrder(Long orderId, OrderRequest orderRequest) {
@@ -105,7 +114,22 @@ public class OrderService {
     public void updateOrderStatus(Long orderId, StatusUpdateRequest statusUpdateRequest) {
         Order order = getOrderById(orderId);
         order.setOrderStatus(statusUpdateRequest.getStatus().getStatus());
+        removeOrderFromCache(order);
         orderRepository.save(order);
+    }
+
+    private void removeOrderFromCache(Order order) {
+        OrderSummary summary = getOrderSummary(order);
+        List<Object> orders = redisTemplate.opsForList().range(ConstantKeys.ORDERS_KEY, 0, -1);
+        if (orders != null) {
+            for (int i = 0; i < orders.size(); i++) {
+                OrderSummary orderSummary = objectMapper.convertValue(orders.get(i), OrderSummary.class);
+                if (summary.getOrderId().equals(orderSummary.getOrderId())) {
+                    redisTemplate.opsForList().remove(ConstantKeys.ORDERS_KEY, 1, orderSummary);
+                }
+            }
+        }
+       // redisTemplate.opsForList().remove(ConstantKeys.ORDERS_KEY, 0, summary);
     }
 
     @Transactional
@@ -339,5 +363,57 @@ public class OrderService {
     public List<OrderResponse> getAllPendingOrders() {
         List<Order> allOrders =  orderRepository.findAllByOrderStatus(OrderStatus.PLACED.getStatus());
         return allOrders.stream().map(this::mapToOrderResponse).collect(Collectors.toList());
+    }
+
+    private void cacheOrderDetails(Order order) {
+        OrderSummary orderSummary = getOrderSummary(order);
+
+        redisTemplate.opsForList().leftPush(ConstantKeys.ORDERS_KEY, orderSummary);
+    }
+
+    private OrderSummary getOrderSummary(Order order) {
+        return OrderSummary.builder()
+                .orderId(order.getId())
+                .userId(order.getUserId())
+                .totalPrice(order.getTotalPrice())
+                .orderStatus(order.getOrderStatus())
+                .orderTime(order.getOrderTime())
+                .orderItemSummaryList(getOrderItemSummeryList(order.getOrderItems()))
+                .build();
+    }
+    private List<OrderItemSummary> getOrderItemSummeryList(Set<OrderItem> orderItems) {
+        return orderItems
+                .stream()
+                .map(orderItem -> OrderItemSummary
+                        .builder()
+                        .orderItemId(orderItem.getId())
+                        .itemId(orderItem.getItem().getId())
+                        .itemName(orderItem.getItem().getName())
+                        .quantity(orderItem.getQuantity())
+                        .orderAddonSummaryList(getOrderAddonSummeryList(orderItem.getOrderAddons()))
+                        .build())
+                .toList();
+    }
+
+    private List<OrderAddonSummary> getOrderAddonSummeryList(Set<OrderAddon> orderAddons) {
+        return orderAddons.stream().map(orderAddon -> OrderAddonSummary
+                .builder()
+                .orderAddonId(orderAddon.getId())
+                .addonId(orderAddon.getAddOn().getId())
+                .addonName(orderAddon.getAddOn().getName())
+                .quantity(orderAddon.getQuantity())
+                .build()).toList();
+    }
+
+    public List<OrderSummary> getAllOrdersSummary(Long page, Long size) {
+        List<Object> summaries = redisTemplate.opsForList().range(ConstantKeys.ORDERS_KEY, page * size, (page + 1) * size - 1);
+        if (summaries != null) {
+            return summaries
+                    .stream()
+                    .map (obj -> objectMapper.convertValue(obj, OrderSummary.class))
+                    .toList();
+        }
+
+        return Collections.emptyList();
     }
 }

@@ -1,6 +1,7 @@
 package org.example.menuapp.controller;
 
 import jakarta.validation.Valid;
+import org.example.menuapp.dto.redis.OrderSummary;
 import org.example.menuapp.dto.request.OrderRequest;
 import org.example.menuapp.dto.request.StatusUpdateRequest;
 import org.example.menuapp.dto.response.OrderResponse;
@@ -31,6 +32,15 @@ public class OrderController {
     public ResponseEntity<List<OrderResponse>> getAllPendingOrders() {
         List<OrderResponse> allOrders = orderService.getAllPendingOrders();
         return ResponseEntity.status(HttpStatus.OK).body(allOrders);
+    }
+
+    @GetMapping("/all-orders-summary")
+    public ResponseEntity<List<OrderSummary>> getAllOrders(
+            @RequestParam(value = "0") Long page,
+            @RequestParam(value = "50") Long size
+    ) {
+       List<OrderSummary> orderSummaries = orderService.getAllOrdersSummary(page, size);
+       return ResponseEntity.status(HttpStatus.OK).body(orderSummaries);
     }
 
     @PostMapping
