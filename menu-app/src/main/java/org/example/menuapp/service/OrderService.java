@@ -421,4 +421,14 @@ public class OrderService {
 
         return Collections.emptyList();
     }
+
+    public List<OrderSummary> getAllOrdersOfCustomer(Long customerId, OrderStatus orderStatus, Integer page, Integer size) {
+        Pageable pageable = getOrderPageable(page, size);
+        Page<Order> customerOrders = orderRepository.findAllByUserIdAndOrderStatus(customerId, orderStatus.getStatus(), pageable);
+        return customerOrders.stream().map(this::getOrderSummary).toList();
+    }
+
+    private Pageable getOrderPageable(Integer page, Integer size) {
+        return PageRequest.of(page, size, Sort.by("orderTime").descending());
+    }
 }

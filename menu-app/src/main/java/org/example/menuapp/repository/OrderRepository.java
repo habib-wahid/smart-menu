@@ -23,4 +23,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "orderItems.orderAddons",
             "orderItems.orderAddons.addOn"})
     Page<Order> findAllByOrderStatus(String orderStatus, Pageable pageable);
+
+
+    @EntityGraph(attributePaths = {
+            "orderItems", "orderItems.item",
+            "orderItems.orderAddons",
+            "orderItems.orderAddons.addOn"
+    })
+    Page<Order> findAllByUserIdAndOrderStatus(Long customerId,String orderStatus, Pageable pageable);
 }

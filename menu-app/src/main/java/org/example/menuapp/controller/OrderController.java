@@ -74,4 +74,14 @@ public class OrderController {
         orderService.deleteOrder(orderId);
         return ResponseEntity.ok(Map.of("message", "Order deleted"));
     }
+
+    @GetMapping("/customer-orders")
+    public ResponseEntity<List<OrderSummary>> getCustomerOrdersByStatus(
+            @RequestParam(name = "customerId") Long customerId,
+            @RequestParam(name = "orderStatus") OrderStatus orderStatus,
+            @RequestParam(name = "page", defaultValue = "0") Integer page,
+            @RequestParam(name = "size", defaultValue = "10") Integer size) {
+        List<OrderSummary> orderSummaries = orderService.getAllOrdersOfCustomer(customerId, orderStatus, page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(orderSummaries);
+    }
 }
