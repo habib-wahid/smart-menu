@@ -22,5 +22,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "orderItems", "orderItems.item",
             "orderItems.orderAddons",
             "orderItems.orderAddons.addOn"})
-    List<Order> findAllByOrderStatus(String orderStatus);
+    Page<Order> findAllByOrderStatus(String orderStatus, Pageable pageable);
 }

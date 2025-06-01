@@ -17,6 +17,10 @@ import org.example.menuapp.error.custom_exceptions.SmUpdateNotAllowedException;
 import org.example.menuapp.error.custom_exceptions.SmResourceNotFoundException;
 import org.example.menuapp.error.messages.ExceptionMessages;
 import org.example.menuapp.repository.OrderRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -111,6 +115,7 @@ public class OrderService {
         return orderRepository.save(currentOrder);
     }
 
+    @Transactional
     public void updateOrderStatus(Long orderId, StatusUpdateRequest statusUpdateRequest) {
         Order order = getOrderById(orderId);
         order.setOrderStatus(statusUpdateRequest.getStatus().getStatus());
@@ -129,7 +134,6 @@ public class OrderService {
                 }
             }
         }
-       // redisTemplate.opsForList().remove(ConstantKeys.ORDERS_KEY, 0, summary);
     }
 
     @Transactional
@@ -360,8 +364,9 @@ public class OrderService {
 
     }
 
-    public List<OrderResponse> getAllPendingOrders() {
-        List<Order> allOrders =  orderRepository.findAllByOrderStatus(OrderStatus.PLACED.getStatus());
+    public List<OrderResponse> getAllOrdersByStatus(OrderStatus orderStatus, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("orderTime").descending());
+        Page<Order> allOrders =  orderRepository.findAllByOrderStatus(orderStatus.getStatus(), pageable);
         return allOrders.stream().map(this::mapToOrderResponse).collect(Collectors.toList());
     }
 

@@ -5,6 +5,7 @@ import org.example.menuapp.dto.redis.OrderSummary;
 import org.example.menuapp.dto.request.OrderRequest;
 import org.example.menuapp.dto.request.StatusUpdateRequest;
 import org.example.menuapp.dto.response.OrderResponse;
+import org.example.menuapp.enums.OrderStatus;
 import org.example.menuapp.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +29,13 @@ public class OrderController {
     //todo need two apis. 1. Get all orders of a customer based on placed, processing, finish. 2. Get order details of a customer order
 
 
-    @GetMapping("/all-order")
-    public ResponseEntity<List<OrderResponse>> getAllPendingOrders() {
-        List<OrderResponse> allOrders = orderService.getAllPendingOrders();
+    @GetMapping("/all-order-order-status")
+    public ResponseEntity<List<OrderResponse>> getAllPendingOrders(
+            @RequestParam(name = "orderStatus") OrderStatus orderStatus,
+            @RequestParam(name = "page", defaultValue = "0") Integer page,
+            @RequestParam(name = "size", defaultValue = "10") Integer size
+    ) {
+        List<OrderResponse> allOrders = orderService.getAllOrdersByStatus(orderStatus, page, size);
         return ResponseEntity.status(HttpStatus.OK).body(allOrders);
     }
 
