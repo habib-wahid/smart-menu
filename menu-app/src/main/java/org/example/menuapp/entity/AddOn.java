@@ -40,5 +40,6 @@ public class AddOn {
             joinColumns = @JoinColumn(name = "addon_id"),
             inverseJoinColumns = @JoinColumn(name = "item_id")
     )
+    @Builder.Default
     private Set<Item> item = new HashSet<>();
 }

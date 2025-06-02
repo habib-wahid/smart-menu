@@ -56,6 +56,7 @@ public class Order {
     @Column(name = "order_delivery_time")
     private LocalDateTime deliveryTime;
 
+    @Builder.Default
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderItem> orderItems = new HashSet<>();
 
