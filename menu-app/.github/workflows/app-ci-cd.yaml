@@ -1,0 +1,28 @@
+
+name: Build and Push Docker image
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  # job id
+  build:
+    # define type of machine we want to run the job
+    runs-on: ubuntu-latest
+    #sequence of tasks under a job. steps run command or tasks
+    steps:
+      # checkout step. it helps the code to move into git server
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      # run spring app with gradle
+
+      - name: Build Spring Boot app
+        run: ./gradlew clean build
+
