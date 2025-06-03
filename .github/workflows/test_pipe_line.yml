@@ -13,6 +13,20 @@ jobs:
       run:
         working-directory: menu-app
     services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: smart_menu
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: root
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
       redis:
         image: redis
         ports:
@@ -24,6 +38,10 @@ jobs:
       with:
         java-version: '21'
         distribution: 'temurin'
+
+    - name: Wait for services
+      run: |
+        echo " Redis available on : ${{ job.services.redis.ports['6379'] }}
 
     - name: Build with Gradle Wrapper
       run: ./gradlew clean build
