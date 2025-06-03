@@ -41,7 +41,7 @@ jobs:
 
     - name: Wait for services
       run: |
-        echo " Redis available on : ${{ job.services.redis.ports['6379'] }}
+        echo " Redis available on : ${{ job.services.redis.ports['6379'] }}"
 
     - name: Build with Gradle Wrapper
       run: ./gradlew clean build
