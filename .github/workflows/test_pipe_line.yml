@@ -9,8 +9,7 @@ on:
 jobs:
   build:
     env:
-      REGISTRY: https://hub.docker.com/repository/docker/kalukulu/sm-app/general
-      IMAGE_NAME: sm
+      REGISTRY: kalukulu/sm-app
 
     runs-on: ubuntu-latest
     defaults:
@@ -62,7 +61,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: $ {{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        images: $ {{ env.REGISTRY }}
 
     - name: Build and push Docker image
       id: push
