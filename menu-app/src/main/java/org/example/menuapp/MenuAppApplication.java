@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class MenuAppApplication{
 
     public static void main(String[] args) {
-        System.out.println("Test work flow");
+        System.out.println("Test work flow for tag");
         SpringApplication.run(MenuAppApplication.class, args);
     }
 
