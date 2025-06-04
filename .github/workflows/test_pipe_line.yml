@@ -8,6 +8,10 @@ on:
 
 jobs:
   build:
+    env:
+      REGISTRY: https://hub.docker.com/repository/docker/kalukulu/sm-app/general
+      IMAGE_NAME: sm
+
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -32,7 +36,9 @@ jobs:
         ports:
           - 6379:6379
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout to Git
+      uses: actions/checkout@v4
+
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
@@ -46,3 +52,23 @@ jobs:
     - name: Build with Gradle Wrapper
       run: ./gradlew clean build
 
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Extract meta data (tags, labels for Docker)
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: $ {{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+    - name: Build and push Docker image
+      id: push
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
