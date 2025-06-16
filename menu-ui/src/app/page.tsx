@@ -1,7 +1,5 @@
-
-'use client';
-import profileImage from '@/../public/profileImage.svg';
-import accountDetails from '@/../public/account-details.svg';
+import TopBar from './components/TopBar';
+import CategoryList from '@/server-components/CategoryList';
 import searchIcon from '@/../public/searchIcon.svg';
 import allFoorIcon from '@/../public/allFood.svg';
 import Meal from '@/../public/meal.svg';
@@ -18,13 +16,7 @@ export default function Home() {
   return (
     <>
    
-          <div className="flex justify-between items-center m-5">
-            <h2 className="text-3xl font-bold">Menu</h2>
-            <div className="flex items-center gap-4">
-              <Image src={profileImage} alt="Profile Image" className="w-10 h-10 rounded-full" />
-              <Image src={accountDetails} alt="Profile Image"/>
-            </div>
-          </div>
+          <TopBar />
 
           {/* Search Bar */}
           <div className="flex max-w-[calc(100vw-10rem)] bg-gray-500 rounded-3xl px-10 py-3 m-5">
@@ -34,9 +26,9 @@ export default function Home() {
 
           {/* Foot Category */}
 
-          <div className='flex overflow-x-scroll no-scrollbar justify-between items-center m-5'>
+          {/* <div className='flex overflow-x-scroll no-scrollbar justify-between items-center m-5'>
             <div className='flex flex-col justify-center items-center min-w-20 min-h-20 bg-customGray rounded-3xl mr-3 flex-grow'>
-              <Image src={allFoorIcon} alt="All Food Icon" />
+              <Image src="http://localhost:8080/api/files/9aedda22-6920-4e1a-a07e-763e2beab889_meal.svg" width={35} height={35} alt="All Food Icon" />
               <div className='text-sm p-1'>
                 All
               </div>
@@ -59,7 +51,9 @@ export default function Home() {
                 Desserts
               </div>
             </div>
-          </div>
+          </div> */}
+
+          <CategoryList />
 
           {/* Food Items */}
 
