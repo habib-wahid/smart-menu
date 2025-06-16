@@ -1,5 +1,6 @@
 package org.example.menuapp.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.example.menuapp.config.FileStorageConfig;
 import org.example.menuapp.dto.request.CategoryRequest;
@@ -62,19 +63,20 @@ public class CategoryService {
         }
     }
 
-    public List<CategoryResponseDto> getAllCategories() {
+    public List<CategoryResponseDto> getAllCategories(HttpServletRequest request) {
         List<Category> categories = categoryRepository.findAll();
-        return categories.stream().map(this::mapToCategoryResponseDto)
+        return categories.stream().map(category -> mapToCategoryResponseDto(category, request))
                 .toList();
     }
 
 
-    private CategoryResponseDto mapToCategoryResponseDto(Category category) {
+    private CategoryResponseDto mapToCategoryResponseDto(Category category, HttpServletRequest request) {
+        String baseFilePath = getBaseFilePath(request);
         return CategoryResponseDto.builder()
                 .id(category.getId())
                 .name(category.getName())
                 .description(category.getDescription())
-                .imageUrl(category.getImageUrl())
+                .imageUrl(String.format("%s%s%s", baseFilePath, "/files/", category.getImageUrl()))
                 .createdAt(category.getCreatedAt())
                 .build();
     }
@@ -146,7 +148,10 @@ public class CategoryService {
 
     public CategoryResponseDto getSpecificCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId).orElse(null);
-        return mapToCategoryResponseDto(category);
+        return mapToCategoryResponseDto(category, null);
     }
 
+    public String getBaseFilePath(HttpServletRequest request) {
+        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+    }
 }

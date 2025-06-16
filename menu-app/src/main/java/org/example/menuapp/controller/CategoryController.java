@@ -1,6 +1,7 @@
 package org.example.menuapp.controller;
 
 import io.lettuce.core.dynamic.annotation.Param;
+import jakarta.servlet.http.HttpServletRequest;
 import org.example.menuapp.dto.request.CategoryRequest;
 import org.example.menuapp.dto.response.CategoryResponseDto;
 import org.example.menuapp.entity.Category;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.Reader;
 import java.util.List;
 
 @RestController
@@ -24,8 +26,9 @@ public class CategoryController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<CategoryResponseDto>> getCategory() {
-        return new ResponseEntity<>(categoryService.getAllCategories(), HttpStatus.OK);
+    public ResponseEntity<List<CategoryResponseDto>> getCategory(HttpServletRequest request,
+                                                                 Reader reader) {
+        return new ResponseEntity<>(categoryService.getAllCategories(request), HttpStatus.OK);
     }
 
     @GetMapping("/{categoryId}")

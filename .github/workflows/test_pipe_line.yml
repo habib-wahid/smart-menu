@@ -3,8 +3,12 @@ name: Java CI with Gradle
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - 'menu-app/**'
   pull_request:
     branches: [ "main" ]
+    paths:
+      - 'menu-app/**'
 
 jobs:
   build:

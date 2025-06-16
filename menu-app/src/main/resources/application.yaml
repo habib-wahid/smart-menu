@@ -4,6 +4,7 @@ spring:
   application:
     name: menu-app
 
+
   datasource:
     url: jdbc:postgresql://localhost:5432/smart_menu
     username: postgres
@@ -27,7 +28,6 @@ spring:
                 max_entries: 3
               expiration:
                 time_to_live: 60000
-
 
 
   liquibase:
