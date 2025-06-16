@@ -7,40 +7,18 @@ type Category = {
     imageUrl: string;
     createdAt: Date;
 }
-async function fetchCategories(): Promise<Category[]> {
-    const response = await fetch("http://localhost:8080/api/category", {
-        cache: "no-cache",
-    })
 
-
-    if (!response.ok) {
-        throw new Error("Failed to fetch categories");
-    }
-
-    const data = response.json().then((data) => {
-        // Transform the data if necessary
-        return data.map((category: any) => ({
-            id: category.id,
-            name: category.name,
-            description: category.description,
-            imageUrl: category.imageUrl,
-            createdAt: new Date(category.createdAt),
-        }));
-    });
-
-    console.log("Data fetched from server:", data);
-
-
-    return data;
-}
 
 export default async function CategoryList() {
    const categories = await fetch('http://localhost:8080/api/category', {
-        cache: "no-cache",});
-    
+        cache: "no-cache"});
+
+        if (!categories.ok) {
+            throw new Error("Failed to fetch categories");
+        }
+
     const categoriesData = await categories.json();
 
-    console.log("Categories Data:", categoriesData);
     return (
         <div className="flex overflow-x-scroll no-scrollbar justify-between items-center m-5">
             {categoriesData.map((category: any) => (
