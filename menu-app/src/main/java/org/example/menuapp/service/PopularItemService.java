@@ -1,0 +1,27 @@
+package org.example.menuapp.service;
+
+import org.example.menuapp.dto.response.ItemResponse;
+import org.example.menuapp.dto.response.PopularItemResponse;
+import org.example.menuapp.entity.Item;
+import org.example.menuapp.repository.ItemRepository;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class PopularItemService {
+
+    private final ItemRepository itemRepository;
+
+    public PopularItemService(ItemRepository itemRepository) {
+        this.itemRepository = itemRepository;
+    }
+
+    @Cacheable(value = "popular-item", key = "'mostPopular'")
+    public List<PopularItemResponse> getPopularItem() {
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        return itemRepository.getAllPopularItems(pageRequest);
+    }
+}
