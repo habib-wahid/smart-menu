@@ -16,3 +16,4 @@
 - Liquibase
 - Data Jpa
 - Hibernate
+- Hibernate Envers

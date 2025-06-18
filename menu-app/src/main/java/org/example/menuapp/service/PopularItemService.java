@@ -1,8 +1,6 @@
 package org.example.menuapp.service;
 
-import org.example.menuapp.dto.response.ItemResponse;
 import org.example.menuapp.dto.response.PopularItemResponse;
-import org.example.menuapp.entity.Item;
 import org.example.menuapp.repository.ItemRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +19,7 @@ public class PopularItemService {
 
     @Cacheable(value = "popular-item", key = "'mostPopular'")
     public List<PopularItemResponse> getPopularItem() {
-        PageRequest pageRequest = PageRequest.of(0, 2);
+        PageRequest pageRequest = PageRequest.of(0, 20);
         return itemRepository.getAllPopularItems(pageRequest);
     }
 }

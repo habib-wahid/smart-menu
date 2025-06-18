@@ -1,8 +1,6 @@
 package org.example.menuapp.controller;
 
-import org.example.menuapp.dto.response.ItemResponse;
 import org.example.menuapp.dto.response.PopularItemResponse;
-import org.example.menuapp.entity.Item;
 import org.example.menuapp.service.PopularItemService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

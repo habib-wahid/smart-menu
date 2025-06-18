@@ -1,5 +1,6 @@
 import TopBar from './components/TopBar';
 import CategoryList from '@/server-components/CategoryList';
+import PopularItemList from '@/server-components/PopularItemList';
 import searchIcon from '@/../public/searchIcon.svg';
 import allFoorIcon from '@/../public/allFood.svg';
 import Meal from '@/../public/meal.svg';
@@ -26,42 +27,18 @@ export default function Home() {
 
           {/* Foot Category */}
 
-          {/* <div className='flex overflow-x-scroll no-scrollbar justify-between items-center m-5'>
-            <div className='flex flex-col justify-center items-center min-w-20 min-h-20 bg-customGray rounded-3xl mr-3 flex-grow'>
-              <Image src="http://localhost:8080/api/files/9aedda22-6920-4e1a-a07e-763e2beab889_meal.svg" width={35} height={35} alt="All Food Icon" />
-              <div className='text-sm p-1'>
-                All
-              </div>
-            </div>
-            <div className='flex flex-col justify-center items-center min-w-20 min-h-20 bg-customGray rounded-3xl mr-3'>
-              <Image src={Meal} alt="All Food Icon" />
-              <div className='text-sm p-1'>
-                Meal
-              </div>
-            </div>
-            <div className='flex flex-col justify-center items-center min-w-20 min-h-20 bg-customGray rounded-3xl mr-3'>
-              <Image src={Soups} alt="All Food Icon" />
-              <div className='text-sm p-1'>
-                Soups
-              </div>
-            </div>
-            <div className='flex flex-col justify-center items-center min-w-20 min-h-20 bg-customGray rounded-3xl mr-3'>
-              <Image src={Dessert} alt="All Food Icon" />
-              <div className='text-sm p-1'>
-                Desserts
-              </div>
-            </div>
-          </div> */}
+
 
           <CategoryList />
-
-          {/* Food Items */}
-
           <div className='ml-5 text-2xl font-bold'>
             <h2>Popular</h2>
           </div>
+          <PopularItemList />
 
-          <Item />
+          {/* Food Items */}
+
+
+          {/* <Item /> */}
 
           <div className='mx-5 text-2xl font-bold'>
             <h2>Promotion</h2>
