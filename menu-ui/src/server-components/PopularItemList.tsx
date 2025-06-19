@@ -2,7 +2,6 @@
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import PopularItem from "./PopularItem";
-import { it } from "node:test";
 
 export default async function PopularItemList() {
 

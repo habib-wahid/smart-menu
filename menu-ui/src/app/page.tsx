@@ -24,12 +24,11 @@ export default function Home() {
             <Image src={searchIcon} alt="Search Icon" />
             <input type="text" className="bg-transparent outline-none w-full ml-5 font-bold" placeholder="Search"/>
           </div>
-
-          {/* Foot Category */}
-
-
-
+          
+         <div className="flex overflow-x-scroll no-scrollbar justify-between items-center m-5">
           <CategoryList />
+        </div>
+          
           <div className='ml-5 text-2xl font-bold'>
             <h2>Popular</h2>
           </div>
