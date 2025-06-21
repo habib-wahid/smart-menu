@@ -25,7 +25,7 @@ export default function Home() {
             <input type="text" className="bg-transparent outline-none w-full ml-5 font-bold" placeholder="Search"/>
           </div>
           
-         <div className="flex overflow-x-scroll no-scrollbar justify-between items-center m-5">
+         <div className="flex overflow-x-auto overflow-y-hidden whitespace-nowrap scrollbar-hide">
           <CategoryList />
         </div>
           

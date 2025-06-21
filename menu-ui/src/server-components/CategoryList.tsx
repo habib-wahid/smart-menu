@@ -23,7 +23,7 @@ export default async function CategoryList() {
         <>
             {categoriesData.map((category: any) => (
                 <div key={category.id}
-                className="flex flex-col justify-center items-center min-w-20 min-h-20 bg-customGray rounded-3xl mr-3">
+                className="flex flex-col justify-center items-center min-w-20 min-h-20 bg-customGray rounded-3xl mr-3 flex-shrink-0">
                     <Image
                         src={category.imageUrl}
                         alt={category.name}
