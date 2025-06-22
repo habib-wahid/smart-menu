@@ -8,6 +8,6 @@ export default function CartLayout( {
 }) {
     return (
     <OrderProvider>
-    {children} 
+        {children} 
     </OrderProvider>)
 }

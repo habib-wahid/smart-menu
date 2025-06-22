@@ -4,13 +4,19 @@ import { createContext, useContext, useEffect } from "react";
 import { useState } from "react";
 
 export interface OrderAddon {
+    name: string;
     addonId: number;
     quantity: number;
+    price: number;
+    filePath: string;
 }
 
 export interface OrderItem {
+    name: string;
     itemId: number;
     quantity: number;
+    price: number;
+    filePath: string;
     addons: OrderAddon[];
 }
 

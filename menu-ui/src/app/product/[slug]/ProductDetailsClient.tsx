@@ -6,7 +6,7 @@ import BackArrow from "@/../public/BackArrow.svg";
 import Star from "@/../public/Star.svg";
 import PlusIcon from "@/../public/PlusIcon.svg";
 import MinusIcon from "@/../public/RemoveIcon.svg";
-import { MenuItem } from "@/Responses";
+import { MenuItem, OrderAddon } from "@/Responses";
 import { useEffect, useState } from "react";
 import Footer from "@/app/components/Footer";
 import { useOrder } from "@/app/context/ProductContext";
@@ -31,16 +31,22 @@ export default function ProductDetailsClient({item}: ItemDetails) {
 
         const hanldeAddOrder = () => {
             addToOrder({
+                name: item.name,
                 itemId: item.id,
                 quantity: 1,
+                price: item.price,
+                filePath: item.filePath,
                 addons: []
             })
         }
 
-        const handleAddAddons = (addon: any) => {
+        const handleAddAddons = (addon: OrderAddon) => {
             addAddonsToItem(item.id, {
+                name: addon.name,
                 addonId: addon.id, 
-                quantity: 1 
+                quantity: 1,
+                price: addon.price,
+                filePath: addon.filePath
             });
         }
         
