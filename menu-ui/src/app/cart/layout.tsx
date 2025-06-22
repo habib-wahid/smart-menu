@@ -1,4 +1,4 @@
-
+import { OrderProvider } from "../context/ProductContext";
 
 
 export default function CartLayout( {
@@ -6,5 +6,8 @@ export default function CartLayout( {
 } :  {
     children: React.ReactNode;
 }) {
-    return (<>{children} </>)
+    return (
+    <OrderProvider>
+    {children} 
+    </OrderProvider>)
 }

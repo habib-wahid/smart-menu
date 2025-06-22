@@ -1,3 +1,4 @@
+import { OrderProvider } from "@/app/context/ProductContext";
 
 export default function ProductDetailsLayout({
     children,
@@ -5,8 +6,8 @@ export default function ProductDetailsLayout({
     children: React.ReactNode;
 }) {
     return (
-        <>
-            {children}
-        </>
+        <OrderProvider>
+             {children}
+        </OrderProvider> 
     );
 }

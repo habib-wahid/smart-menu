@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useCart } from "@/app/context/Context";
+// import { useCart } from "@/app/context/Context";
 import BackArrow from "@/../public/BackArrow.svg";
 import Star from "@/../public/Star.svg";
 import PlusIcon from "@/../public/PlusIcon.svg";
@@ -9,6 +9,7 @@ import MinusIcon from "@/../public/RemoveIcon.svg";
 import { MenuItem } from "@/Responses";
 import { useEffect, useState } from "react";
 import Footer from "@/app/components/Footer";
+import { useOrder } from "@/app/context/ProductContext";
 
 interface ItemDetails {
     item: MenuItem
@@ -16,26 +17,32 @@ interface ItemDetails {
 
 export default function ProductDetailsClient({item}: ItemDetails) {
     const router = useRouter();
-      const { cart, addToCart, removeFromCart } = useCart();
+      const {order, addToOrder, removeFromOrder, addAddonsToItem} = useOrder();
       const [quantity, setQuantity] = useState(0);
 
         useEffect(() => {
-          if (cart.find((i) => i.id === item?.id)) {
-            setQuantity(Number(cart.find((i) => i.id === item?.id)?.quantity));
+          if (order.find((o) => o.itemId === item?.id)) {
+            setQuantity(Number(order.find((i) => i.itemId === item?.id)?.quantity));
           } else {
             setQuantity(0);
           }
-        }, [cart]);
+        }, [order]);
       
-        const handleAddToCart = () => {
-          addToCart({
-            id: item.id,
-            name: item.name,
-            price: item.price,
-            quantity: 1,
-            image: item.filePath,
-          });
-        };
+
+        const hanldeAddOrder = () => {
+            addToOrder({
+                itemId: item.id,
+                quantity: 1,
+                addons: []
+            })
+        }
+
+        const handleAddAddons = (addon: any) => {
+            addAddonsToItem(item.id, {
+                addonId: addon.id, 
+                quantity: 1 
+            });
+        }
         
     return (
         <>
@@ -70,7 +77,7 @@ export default function ProductDetailsClient({item}: ItemDetails) {
                   src={MinusIcon}
                   alt="Minus Icon"
                   className="cursor-pointer transition-transform duration-200 hover:scale-110"
-                  onClick={() => removeFromCart(item.id)}
+                //   onClick={() => removeFromCart(item.id)}
                 />
               </div>
               <div className="mx-2">{quantity}</div>
@@ -79,7 +86,7 @@ export default function ProductDetailsClient({item}: ItemDetails) {
                   src={PlusIcon}
                   alt="Plus Icon"
                   className="cursor-pointer transition-transform duration-200 hover:scale-110"
-                   onClick={handleAddToCart}
+                   onClick={hanldeAddOrder}
                 />
               </div>
             </div>
@@ -98,7 +105,7 @@ export default function ProductDetailsClient({item}: ItemDetails) {
                   height={70}
                   alt="Add On"
                   className="cursor-pointer transition-transform duration-200 hover:scale-110"
-                  onClick={handleAddToCart}
+                  onClick={() => handleAddAddons(addOn)}
                   
                 />
               </div>

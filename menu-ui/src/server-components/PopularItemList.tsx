@@ -23,7 +23,7 @@ export default async function PopularItemList() {
                     {
                         popularItems.map((item : any) => (
                             
-                                <PopularItem item={item} key={item.key}/>
+                                <PopularItem item={item} key={item.id}/>
                             
                         ) )
                     }

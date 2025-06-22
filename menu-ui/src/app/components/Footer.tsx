@@ -5,12 +5,12 @@ import CartIcon from '../../../public/Cart.svg';
 import ProfileIcon from '../../../public/Profile.svg';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useCart } from '../context/Context';
+// import { useCart } from '../context/Context';
 
 
 export default function Footer() {
 
-    const {cart} = useCart();
+   // const {cart} = useCart();
     const router = useRouter();
 
     return (
@@ -29,7 +29,7 @@ export default function Footer() {
                             />
 
                 <span className="absolute top-0 right-0 -mt-2 -mr-1 bg-red-500 text-white text-xs font-bold px-1 rounded-full">
-                    {cart.map((item) => item.quantity).reduce((a, b) => a + b, 0)}
+                    {/* {cart.map((item) => item.quantity).reduce((a, b) => a + b, 0)} */}
                 </span>
              </div>
            

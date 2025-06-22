@@ -3,13 +3,23 @@
 import { createContext, useContext, useEffect } from "react";
 import { useState } from "react";
 
+export interface OrderAddon {
+    addonId: number;
+    quantity: number;
+}
+
+export interface OrderItem {
+    itemId: number;
+    quantity: number;
+    addons?: OrderAddon[];
+}
+
 export interface CartItem {
     id: number;
     name: string;
     price: number;
     quantity: number;
     image: string;
-    addOns? : string[];
 }
 
 interface CartContextType {
@@ -74,8 +84,6 @@ export const CartProvider = ({children} : {children: React.ReactNode}) => {
         })
     }
 
-
-
     return (
         <CartContext.Provider value={{cart, addToCart, removeFromCart}}>
             {children}
@@ -83,11 +91,11 @@ export const CartProvider = ({children} : {children: React.ReactNode}) => {
     )
 }
 
-export const useCart = () => {
-    const context = useContext(CartContext);
-    if (!context) {
-        throw new Error("useCart must be used within a CartProvider");
-    }
-    return context;
-}
+// export const useCart = () => {
+//     const context = useContext(CartContext);
+//     if (!context) {
+//         throw new Error("useCart must be used within a CartProvider");
+//     }
+//     return context;
+// }
 
