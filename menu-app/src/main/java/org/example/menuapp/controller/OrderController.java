@@ -10,6 +10,7 @@ import org.example.menuapp.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.List;
 import java.util.Map;
@@ -21,9 +22,11 @@ import java.util.Map;
 public class OrderController {
 
     private final OrderService orderService;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, SimpMessagingTemplate messagingTemplate) {
         this.orderService = orderService;
+        this.messagingTemplate = messagingTemplate;
     }
 
     //todo need two apis. 1. Get all orders of a customer based on placed, processing, finish. 2. Get order details of a customer order
@@ -51,6 +54,7 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<OrderResponse> placeOrder(@Valid @RequestBody OrderRequest orderRequest) {
         OrderResponse orderResponse = orderService.placeOrder(orderRequest);
+        messagingTemplate.convertAndSend("/topic/orders", orderResponse);
         return ResponseEntity.status(HttpStatus.CREATED).body(orderResponse);
     }
 
