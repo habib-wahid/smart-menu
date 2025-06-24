@@ -4,16 +4,26 @@ spring:
   application:
     name: menu-app
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: debezium-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+    topic: dbserver1.inventory.customers
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/smart_menu
-    username: postgres
-    password: root
+    url: jdbc:mysql://localhost:3306/inventory
+    username: mysqluser
+    password: mysqlpw
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     show-sql: true
+
     properties:
       hibernate:
         cache:
@@ -28,11 +38,12 @@ spring:
                 max_entries: 3
               expiration:
                 time_to_live: 60000
+        dialect: org.hibernate.dialect.MySQLDialect
 
 
-  liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.xml
-    enabled: true
+  #  liquibase:
+#    change-log: classpath:db/changelog/db.changelog-master.xml
+#    enabled: true
 
 
   web:
