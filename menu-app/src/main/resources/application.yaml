@@ -4,6 +4,9 @@ spring:
   application:
     name: menu-app
 
+  session:
+    timeout: 1800s
+
 
   datasource:
     url: jdbc:postgresql://localhost:5432/smart_menu
@@ -74,3 +77,12 @@ management:
     export:
       prometheus:
         enabled: true
+
+logging:
+  level:
+    org.springframework.web.socket: DEBUG
+    org.springframework.messaging.simp: DEBUG
+    org.springframework.web.socket.messaging: DEBUG
+    org.springframework.web.socket.sockjs: DEBUG
+
+
