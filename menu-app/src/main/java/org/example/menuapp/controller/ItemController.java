@@ -39,4 +39,9 @@ public class ItemController {
         itemService.createItem(request, file);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @GetMapping("/by-category/{categoryId}")
+    public ResponseEntity<List<ItemResponse>> getItemsByCategory(@PathVariable Long categoryId) {
+        return ResponseEntity.ok(itemService.getItemsByCategory(categoryId));
+    }
 }
