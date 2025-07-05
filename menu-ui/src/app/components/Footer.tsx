@@ -5,6 +5,11 @@ import CartIcon from '../../../public/Cart.svg';
 import ProfileIcon from '../../../public/Profile.svg';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { faHouse } from '@fortawesome/free-solid-svg-icons/faHouse';
+import { faBoxOpen } from '@fortawesome/free-solid-svg-icons';
+import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
 // import { useCart } from '../context/Context';
 
 
@@ -23,8 +28,7 @@ export default function Footer() {
              onClick={() => router.push('/')}/>
              
              <div className='relative'>
-                <Image className='cursor-pointer transition-transform hover:scale-105 active:scale-95' 
-                            src={CartIcon} alt="Cart Icon"
+                <FontAwesomeIcon icon={faCartPlus} className='text-xl cursor-pointer transition-transform hover:scale-105 active:scale-95' 
                             onClick={() => router.push('/cart')}
                             />
 
@@ -39,6 +43,9 @@ export default function Footer() {
                 src={ProfileIcon} 
                 alt="Profile Icon" 
             />
+
+            <FontAwesomeIcon icon={faHouse} className='text-xl' />
+            <FontAwesomeIcon icon={faBoxOpen} className='text-xl' />
 
             {/* Notification Badge */}
            
