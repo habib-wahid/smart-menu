@@ -2,14 +2,10 @@ import TopBar from './components/TopBar';
 import CategoryList from '@/server-components/CategoryList';
 import PopularItemList from '@/server-components/PopularItemList';
 import searchIcon from '@/../public/searchIcon.svg';
-import allFoorIcon from '@/../public/allFood.svg';
-import Meal from '@/../public/meal.svg';
-import Soups from '@/../public/soups.png';
-import Dessert from '@/../public/desert.svg';
 import Image from 'next/image';
-import Item from './components/Item';
 import PromotionBox from './components/PromotionBox';
 import Footer from './components/Footer';
+import Category from '@/server-components/Category';
 
 
 
@@ -25,9 +21,22 @@ export default function Home() {
             <input type="text" className="bg-transparent outline-none w-full ml-5 font-bold" placeholder="Search"/>
           </div>
           
-         <div className="flex overflow-x-auto overflow-y-hidden whitespace-nowrap scrollbar-hide">
-          <CategoryList />
-        </div>
+            {/* <div className="w-full overflow-x-auto flex space-x-2 p-5">
+            {[...Array(5)].map((_, index) => (
+              <div
+                key={index}
+                className="min-w-[150px] h-10 bg-red-300 rounded-xl flex items-center justify-center text-white font-bold"
+              >
+                Box {index + 1}
+              </div>
+            ))}
+
+           
+          </div> */}
+
+              <Category />
+
+          
           
           <div className='ml-5 text-2xl font-bold'>
             <h2>Popular</h2>

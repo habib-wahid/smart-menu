@@ -50,3 +50,12 @@ export type OrderResponse = {
         }[];
     }[]
 }
+
+
+export type CategoryResponse = {
+    id: number;
+    name: string;
+    description: string;
+    imageUrl: string;
+    createdAt: Date;
+};

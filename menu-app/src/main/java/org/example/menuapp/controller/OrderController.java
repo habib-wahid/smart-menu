@@ -1,17 +1,21 @@
 package org.example.menuapp.controller;
 
 import jakarta.validation.Valid;
+import net.sf.jasperreports.engine.JRException;
 import org.example.menuapp.dto.redis.OrderSummary;
 import org.example.menuapp.dto.request.OrderRequest;
 import org.example.menuapp.dto.request.StatusUpdateRequest;
 import org.example.menuapp.dto.response.OrderResponse;
 import org.example.menuapp.enums.OrderStatus;
+import org.example.menuapp.service.OrderReportService;
 import org.example.menuapp.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -23,10 +27,12 @@ public class OrderController {
 
     private final OrderService orderService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final OrderReportService orderReportService;
 
-    public OrderController(OrderService orderService, SimpMessagingTemplate messagingTemplate) {
+    public OrderController(OrderService orderService, SimpMessagingTemplate messagingTemplate, OrderReportService orderReportService) {
         this.orderService = orderService;
         this.messagingTemplate = messagingTemplate;
+        this.orderReportService = orderReportService;
     }
 
     //todo need two apis. 1. Get all orders of a customer based on placed, processing, finish. 2. Get order details of a customer order
@@ -87,5 +93,10 @@ public class OrderController {
             @RequestParam(name = "size", defaultValue = "10") Integer size) {
         List<OrderSummary> orderSummaries = orderService.getAllOrdersOfCustomer(customerId, orderStatus, page, size);
         return ResponseEntity.status(HttpStatus.OK).body(orderSummaries);
+    }
+
+    @GetMapping("/report")
+    public String getOrderReport() throws JRException, IOException {
+        return orderReportService.orderReport("pdf");
     }
 }

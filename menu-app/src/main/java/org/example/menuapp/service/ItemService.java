@@ -51,6 +51,15 @@ public class ItemService {
         return mapToItemResponse(item, addonResponses);
     }
 
+
+    public List<ItemResponse> getItemsByCategory(Long categoryId) {
+        Category category = categoryService.getCategoryById(categoryId);
+        List<Item> itemsByCategory = itemRepository.getAllByCategory(Set.of(category));
+        return itemsByCategory.stream()
+                .map(item -> mapToItemResponse(item, null))
+                .toList();
+    }
+
     @Transactional
     public void createItem(ItemRequest request, MultipartFile file) {
         Set<Category> categories = categoryService.getAllCategoriesById(request.getCategoryIds());
