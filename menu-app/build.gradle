@@ -50,7 +50,7 @@ dependencies {
     implementation("io.projectreactor.netty:reactor-netty")
     implementation("io.netty:netty-all")
     implementation("net.sf.jasperreports:jasperreports:6.20.6")
-}
+    implementation("dev.langchain4j:langchain4j-ollama-spring-boot-starter:1.1.0-beta7")}
 
 tasks.named('test') {
     useJUnitPlatform()

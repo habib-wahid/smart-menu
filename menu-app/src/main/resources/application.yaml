@@ -28,7 +28,7 @@ spring:
             config: redisson.yaml
             category_cache:
               eviction:
-                max_entries: 3
+                max_entries: 10
               expiration:
                 time_to_live: 60000
 
@@ -85,4 +85,11 @@ logging:
     org.springframework.web.socket.messaging: DEBUG
     org.springframework.web.socket.sockjs: DEBUG
 
+langchain4j:
+  ollama:
+    chat-model:
+      base-url: http://localhost:11434
+      model-name: deepseek-r1:1.5b
+      temperature: 0.8
+      timeout: PT60S
 
