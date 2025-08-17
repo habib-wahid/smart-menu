@@ -54,6 +54,13 @@ public class CategoryController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/programmatic")
+    public ResponseEntity<Void> createProgrammaticCategory(
+            @RequestBody CategoryRequest categoryRequest) {
+        categoryService.createCategoryWithProgrammaticTransaction(categoryRequest);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);

@@ -12,6 +12,10 @@ import org.example.menuapp.error.messages.ExceptionMessages;
 import org.example.menuapp.repository.CategoryRepository;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -30,10 +34,12 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final FileStorageConfig fileStorageConfig;
+    private final PlatformTransactionManager transactionManager;
 
-    public CategoryService(CategoryRepository categoryRepository, FileStorageConfig fileStorageConfig) {
+    public CategoryService(CategoryRepository categoryRepository, FileStorageConfig fileStorageConfig, PlatformTransactionManager transactionManager) {
         this.categoryRepository = categoryRepository;
         this.fileStorageConfig = fileStorageConfig;
+        this.transactionManager = transactionManager;
     }
 
     public void createCategory(
@@ -61,6 +67,28 @@ public class CategoryService {
             log.info("Could not copy file: {}", e.getMessage());
             throw new SmFileStorageException(ExceptionMessages.FILE_NOT_ABLE_TO_SAVE);
         }
+    }
+
+    public void createCategoryWithProgrammaticTransaction(CategoryRequest categoryRequest) {
+        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        def.setName("Category Tx");
+        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+        TransactionStatus status = transactionManager.getTransaction(def);
+
+        try {
+            Category category = Category.builder()
+                    .name(categoryRequest.getName())
+                    .description(categoryRequest.getDescription())
+                    .build();
+            categoryRepository.save(category);
+            log.info("Transaction status : {}", status.isCompleted());
+            transactionManager.commit(status);
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+            throw  e;
+        }
+
+        log.info("Transaction status : {}", status.isCompleted());
     }
 
     public List<CategoryResponseDto> getAllCategories(HttpServletRequest request) {

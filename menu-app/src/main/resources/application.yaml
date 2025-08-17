@@ -87,9 +87,13 @@ logging:
 
 langchain4j:
   ollama:
-    chat-model:
+    streaming-chat-model:
       base-url: http://localhost:11434
       model-name: llama3.1:latest
       temperature: 0.8
       timeout: PT60S
 
+
+ollama:
+  base-url: http://localhost:11434
+  embedding-model: nomic-embed-text:latest
