@@ -1,6 +1,7 @@
 package org.example.menuapp.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.menuapp.annotation.LogEvent;
 import org.example.menuapp.config.FileStorageConfig;
 import org.example.menuapp.dto.request.ItemRequest;
 import org.example.menuapp.dto.response.AddonResponse;
@@ -60,8 +61,9 @@ public class ItemService {
                 .toList();
     }
 
+    @LogEvent(action = "create-item")
     @Transactional
-    public void createItem(ItemRequest request, MultipartFile file) {
+    public Item createItem(ItemRequest request, MultipartFile file) {
         Set<Category> categories = categoryService.getAllCategoriesById(request.getCategoryIds());
         Item item = new Item();
         item.setName(request.getItemName());
@@ -86,7 +88,7 @@ public class ItemService {
             }
         }
 
-        itemRepository.save(item);
+        return itemRepository.save(item);
     }
 
     public List<ItemResponse> getAllItems() {

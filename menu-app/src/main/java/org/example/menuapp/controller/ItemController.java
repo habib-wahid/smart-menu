@@ -2,6 +2,7 @@ package org.example.menuapp.controller;
 
 import org.example.menuapp.dto.request.ItemRequest;
 import org.example.menuapp.dto.response.ItemResponse;
+import org.example.menuapp.entity.Item;
 import org.example.menuapp.service.ItemService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,7 +37,7 @@ public class ItemController {
     public ResponseEntity<Void> createItem(
             @RequestPart(name = "item") ItemRequest request,
             @RequestPart(name = "file") MultipartFile file) {
-        itemService.createItem(request, file);
+        Item item = itemService.createItem(request, file);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
