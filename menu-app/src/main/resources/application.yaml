@@ -67,7 +67,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: health, info, custom, env,metrics,beans,loggers, prometheus
 
   endpoint:
     prometheus:
