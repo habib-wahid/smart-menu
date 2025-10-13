@@ -29,7 +29,7 @@ export default async function CategoryItems({
       };
     const itemsByCategory = await getItemsByCategory(Number(categoryId));
     console.log("Items in category: ", itemsByCategory);
-  return (
+   return (
     <>
       <TopBar />
         {
