@@ -1,7 +1,5 @@
 package org.example.menuapp.controller;
 
-import io.lettuce.core.dynamic.annotation.Param;
-import jakarta.servlet.http.HttpServletRequest;
 import org.example.menuapp.dto.request.CategoryRequest;
 import org.example.menuapp.dto.response.CategoryResponseDto;
 import org.example.menuapp.entity.Category;
@@ -10,9 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.Reader;
 import java.util.List;
 
 @RestController
@@ -26,9 +22,8 @@ public class CategoryController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<CategoryResponseDto>> getCategory(HttpServletRequest request,
-                                                                 Reader reader) {
-        return new ResponseEntity<>(categoryService.getAllCategories(request), HttpStatus.OK);
+    public ResponseEntity<List<CategoryResponseDto>> getCategory() {
+        return new ResponseEntity<>(categoryService.getAllCategories(), HttpStatus.OK);
     }
 
     @GetMapping("/{categoryId}")
@@ -38,20 +33,19 @@ public class CategoryController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping()
     public void createCategory(
-            @RequestPart("category") CategoryRequest categoryRequest,
-            @RequestPart("file") MultipartFile file) {
-        categoryService.createCategory(categoryRequest, file);
+            @RequestBody CategoryRequest categoryRequest) {
+        categoryService.createCategory(categoryRequest);
     }
 
-    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(path = "/{categoryId}")
     public ResponseEntity<Void> updateCategory(
-            @RequestPart("category") CategoryRequest categoryRequest,
-            @RequestPart("file") MultipartFile file
+            @PathVariable Long categoryId,
+            @RequestBody CategoryRequest categoryRequest
     ) {
-        categoryService.updateCategory(categoryRequest, file);
-        return ResponseEntity.noContent().build();
+        categoryService.updateCategory(categoryId, categoryRequest);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{id}")

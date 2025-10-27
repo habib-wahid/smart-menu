@@ -1,10 +1,8 @@
 package org.example.menuapp.dto.request;
 
-import lombok.Data;
+import jakarta.validation.constraints.NotBlank;
 
-@Data
-public class CategoryRequest {
-    private Long categoryId;
-    private String name;
-    private String description;
+public record CategoryRequest(
+        @NotBlank String name,
+        String description) {
 }
