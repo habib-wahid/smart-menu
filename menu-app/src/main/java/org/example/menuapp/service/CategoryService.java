@@ -33,10 +33,11 @@ public class CategoryService {
     }
 
     @Transactional
-    public void createCategory(
+    public Void createCategory(
             CategoryRequest categoryRequest) {
             Category category = categoryMapper.toCategory(categoryRequest);
             categoryRepository.save(category);
+            return null;
     }
 
     public List<CategoryResponseDto> getAllCategories() {
