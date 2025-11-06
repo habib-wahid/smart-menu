@@ -170,7 +170,7 @@ public class OrderService {
         // todo : need to get all the items at a time
         Item item = resolveItem(orderItemRequest, requestItem);
         OrderItem orderItem = new OrderItem();
-        orderItem.setItem(item);
+     //   orderItem.setItem(item);
         orderItem.setQuantity(orderItemRequest.getQuantity());
         orderItem.setTotalItemPrice(orderItemRequest.getQuantity() * item.getPrice());
 
@@ -229,11 +229,7 @@ public class OrderService {
     }
 
     private OrderAddon buildOrderAddon(OrderAddonRequest addonRequest, AddOn addOn) {
-        return OrderAddon.builder()
-                .addOn(addOn)
-                .quantity(addonRequest.getQuantity())
-                .price(addonRequest.getQuantity() * addOn.getPrice())
-                .build();
+        return null;
     }
     private OrderResponse mapToOrderResponse(Order order) {
         return OrderResponse.builder()
@@ -292,9 +288,9 @@ public class OrderService {
         return OrderItemResponse.builder()
                 .orderItemId(orderItem.getId())
                 .orderId(orderItem.getOrder().getId())
-                .itemId(orderItem.getItem().getId())
-                .itemName(orderItem.getItem().getName())
-                .itemUnitPrice(orderItem.getItem().getPrice())
+              //  .itemId(orderItem.getItem().getId())
+             //   .itemName(orderItem.getItem().getName())
+             //   .itemUnitPrice(orderItem.getItem().getPrice())
                 .quantity(orderItem.getQuantity())
                 .totalPrice(orderItem.getTotalPrice())
                 .orderAddons(getOrderAddonList(orderItem.getOrderAddons()))
@@ -305,9 +301,9 @@ public class OrderService {
         return OrderAddonResponse.builder()
                 .orderAddonId(orderAddon.getId())
                 .orderItemId(orderAddon.getOrderItem().getId())
-                .addonId(orderAddon.getAddOn().getId())
-                .addonName(orderAddon.getAddOn().getName())
-                .addonUnitPrice(orderAddon.getAddOn().getPrice())
+              //  .addonId(orderAddon.getAddOn().getId())
+               // .addonName(orderAddon.getAddOn().getName())
+              //  .addonUnitPrice(orderAddon.getAddOn().getPrice())
                 .quantity(orderAddon.getQuantity())
                 .totalPrice(orderAddon.getPrice())
                 .build();
@@ -392,8 +388,8 @@ public class OrderService {
                 .map(orderItem -> OrderItemSummary
                         .builder()
                         .orderItemId(orderItem.getId())
-                        .itemId(orderItem.getItem().getId())
-                        .itemName(orderItem.getItem().getName())
+                      //  .itemId(orderItem.getItem().getId())
+                      //  .itemName(orderItem.getItem().getName())
                         .quantity(orderItem.getQuantity())
                         .orderAddonSummaryList(getOrderAddonSummeryList(orderItem.getOrderAddons()))
                         .build())
@@ -404,8 +400,8 @@ public class OrderService {
         return orderAddons.stream().map(orderAddon -> OrderAddonSummary
                 .builder()
                 .orderAddonId(orderAddon.getId())
-                .addonId(orderAddon.getAddOn().getId())
-                .addonName(orderAddon.getAddOn().getName())
+             //   .addonId(orderAddon.getAddOn().getId())
+              //  .addonName(orderAddon.getAddOn().getName())
                 .quantity(orderAddon.getQuantity())
                 .build()).toList();
     }

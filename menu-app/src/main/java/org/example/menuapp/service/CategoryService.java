@@ -68,17 +68,10 @@ public class CategoryService {
                         String.format(ExceptionMessages.RESOURCE_NOT_FOUND, "Category", id)));
     }
 
-    public Set<Category> getAllCategoriesById(Set<Long> categoryIds) {
-        List<Category> categories = categoryRepository.findAllById(categoryIds);
-        Set<Long> itemIds = categories.stream()
-                .map(Category::getId)
+    public Set<Category> getAllCategoriesByIds(Set<Long> categoryIds) {
+        return categoryRepository.findAllById(categoryIds)
+                .stream()
                 .collect(Collectors.toSet());
-        categoryIds.removeAll(itemIds);
-        if (!categoryIds.isEmpty()) {
-            throw new SmResourceNotFoundException(
-                    String.format(ExceptionMessages.RESOURCE_NOT_FOUND, "Category", categoryIds));
-        }
-        return new HashSet<>(categories);
     }
 
     public CategoryResponseDto getSpecificCategory(Long categoryId) {

@@ -1,48 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
-    <changeSet id="create-category-and-item-tables" author="habib">
+    <!-- Create Sequences -->
+    <changeSet id="1" author="Habib">
+        <createSequence sequenceName="category_sequence" startValue="1" incrementBy="1"/>
+        <createSequence sequenceName="addon_sequence" startValue="1" incrementBy="1"/>
+        <createSequence sequenceName="item_sequence" startValue="1" incrementBy="1"/>
+        <createSequence sequenceName="order_sequence" startValue="1" incrementBy="1"/>
+        <createSequence sequenceName="order_item_sequence" startValue="1" incrementBy="1"/>
+        <createSequence sequenceName="order_addon_sequence" startValue="1" incrementBy="1"/>
+        <createSequence sequenceName="revinfo_seq" startValue="1" incrementBy="1"/>
+    </changeSet>
 
-        <createSequence sequenceName="category_sequence"
-                        startValue="1"
-                        incrementBy="1" />
-        <!-- Category table -->
+    <!-- Create Category Table -->
+    <changeSet id="2" author="Habib">
         <createTable tableName="category">
-            <column name="id" type="BIGINT" autoIncrement="true">
+            <column name="id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="category_name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="description" type="VARCHAR(1000)"/>
-            <column name="file_path" type="VARCHAR(500)"/>
+            <column name="description" type="VARCHAR(500)"/>
             <column name="created_at" type="TIMESTAMP"/>
         </createTable>
+    </changeSet>
 
-        <createSequence sequenceName="item_sequence"
-                        startValue="1"
-                        incrementBy="1" />
-        <!-- Item table -->
-        <createTable tableName="item">
-            <column name="id" type="BIGINT" autoIncrement="true">
+    <!-- Create AddOn Table -->
+    <changeSet id="3" author="Habib">
+        <createTable tableName="addon">
+            <column name="id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="description" type="VARCHAR(1000)"/>
-            <column name="item_price" type="DECIMAL(10,2)">
+            <column name="description" type="VARCHAR(500)"/>
+            <column name="price" type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
             <column name="file_path" type="VARCHAR(500)"/>
-            <column name="full_path" type="VARCHAR(1000)"/>
-            <column name="item_rating" type="DECIMAL(3,2)"/>
+            <column name="file_name" type="VARCHAR(500)"/>
+            <column name="rating" type="DOUBLE"/>
         </createTable>
+    </changeSet>
 
-        <!-- Many-to-many join table -->
+    <!-- Create Item Table -->
+    <changeSet id="4" author="Habib">
+        <createTable tableName="item">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(500)"/>
+            <column name="item_price" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="file_path" type="VARCHAR(500)"/>
+            <column name="file_name" type="VARCHAR(255)"/>
+            <column name="item_rating" type="DOUBLE"/>
+        </createTable>
+    </changeSet>
+
+    <!-- Create Item-Category Join Table -->
+    <changeSet id="5" author="Habib">
         <createTable tableName="item_category">
             <column name="item_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -52,17 +79,240 @@
             </column>
         </createTable>
 
-        <addPrimaryKey tableName="item_category" columnNames="item_id, category_id" constraintName="pk_item_category"/>
+        <addPrimaryKey tableName="item_category"
+                       columnNames="item_id, category_id"
+                       constraintName="pk_item_category"/>
+
         <addForeignKeyConstraint baseTableName="item_category"
                                  baseColumnNames="item_id"
+                                 constraintName="fk_item_category_item"
                                  referencedTableName="item"
                                  referencedColumnNames="id"
-                                 constraintName="fk_item_category_item"/>
+                                 onDelete="CASCADE"/>
+
         <addForeignKeyConstraint baseTableName="item_category"
                                  baseColumnNames="category_id"
+                                 constraintName="fk_item_category_category"
                                  referencedTableName="category"
                                  referencedColumnNames="id"
-                                 constraintName="fk_item_category_category"/>
-
+                                 onDelete="CASCADE"/>
     </changeSet>
+
+    <!-- Create AddOn-Item Join Table -->
+    <changeSet id="6" author="Habib">
+        <createTable tableName="addon_item">
+            <column name="addon_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="item_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="addon_item"
+                       columnNames="addon_id, item_id"
+                       constraintName="pk_addon_item"/>
+
+        <addForeignKeyConstraint baseTableName="addon_item"
+                                 baseColumnNames="addon_id"
+                                 constraintName="fk_addon_item_addon"
+                                 referencedTableName="addon"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="addon_item"
+                                 baseColumnNames="item_id"
+                                 constraintName="fk_addon_item_item"
+                                 referencedTableName="item"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+    <!-- Create Order Table -->
+    <changeSet id="7" author="Habib">
+        <createTable tableName="customer_order">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order_status" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_price" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_item_price" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_addon_price" type="DOUBLE"/>
+            <column name="paid" type="BOOLEAN"/>
+            <column name="served" type="BOOLEAN"/>
+            <column name="table_no" type="INTEGER"/>
+            <column name="order_time" type="TIMESTAMP"/>
+            <column name="order_update_time" type="TIMESTAMP"/>
+            <column name="order_delivery_time" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <!-- Create OrderItem Table -->
+    <changeSet id="8" author="Habib">
+        <createTable tableName="order_item">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="item_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="quantity" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_price" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_item_price" type="DOUBLE"/>
+            <column name="total_addon_price" type="DOUBLE"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="order_item"
+                                 baseColumnNames="order_id"
+                                 constraintName="fk_order_item_order"
+                                 referencedTableName="customer_order"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+    <!-- Create OrderAddon Table -->
+    <changeSet id="9" author="Habib">
+        <createTable tableName="order_addon">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_item_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="addon_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="quantity" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="order_addon"
+                                 baseColumnNames="order_item_id"
+                                 constraintName="fk_order_addon_order_item"
+                                 referencedTableName="order_item"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+    <!-- Create Revision Info Table (for Envers Auditing) -->
+    <changeSet id="10" author="Habib">
+        <createTable tableName="revinfo">
+            <column name="rev" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="revstmp" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <!-- Create Audit Tables -->
+    <changeSet id="11" author="Habib">
+        <!-- Customer Order Audit Table -->
+        <createTable tableName="customer_order_audit">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="TINYINT"/>
+            <column name="user_id" type="BIGINT"/>
+            <column name="order_status" type="VARCHAR(50)"/>
+            <column name="total_price" type="DOUBLE"/>
+            <column name="total_item_price" type="DOUBLE"/>
+            <column name="total_addon_price" type="DOUBLE"/>
+            <column name="paid" type="BOOLEAN"/>
+            <column name="served" type="BOOLEAN"/>
+            <column name="table_no" type="INTEGER"/>
+            <column name="order_time" type="TIMESTAMP"/>
+            <column name="order_update_time" type="TIMESTAMP"/>
+            <column name="order_delivery_time" type="TIMESTAMP"/>
+        </createTable>
+
+        <addPrimaryKey tableName="customer_order_audit"
+                       columnNames="id, rev"
+                       constraintName="pk_customer_order_audit"/>
+
+        <addForeignKeyConstraint baseTableName="customer_order_audit"
+                                 baseColumnNames="rev"
+                                 constraintName="fk_customer_order_audit_revinfo"
+                                 referencedTableName="revinfo"
+                                 referencedColumnNames="rev"/>
+    </changeSet>
+
+    <changeSet id="12" author="Habib">
+        <!-- Order Item Audit Table -->
+        <createTable tableName="order_item_audit">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="TINYINT"/>
+            <column name="order_id" type="BIGINT"/>
+            <column name="item_id" type="BIGINT"/>
+            <column name="quantity" type="INTEGER"/>
+            <column name="total_price" type="DOUBLE"/>
+            <column name="total_item_price" type="DOUBLE"/>
+            <column name="total_addon_price" type="DOUBLE"/>
+        </createTable>
+
+        <addPrimaryKey tableName="order_item_audit"
+                       columnNames="id, rev"
+                       constraintName="pk_order_item_audit"/>
+
+        <addForeignKeyConstraint baseTableName="order_item_audit"
+                                 baseColumnNames="rev"
+                                 constraintName="fk_order_item_audit_revinfo"
+                                 referencedTableName="revinfo"
+                                 referencedColumnNames="rev"/>
+    </changeSet>
+
+    <changeSet id="13" author="Habib">
+        <!-- Order Addon Audit Table -->
+        <createTable tableName="order_addon_audit">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="TINYINT"/>
+            <column name="order_item_id" type="BIGINT"/>
+            <column name="addon_id" type="BIGINT"/>
+            <column name="quantity" type="INTEGER"/>
+            <column name="price" type="DOUBLE"/>
+        </createTable>
+
+        <addPrimaryKey tableName="order_addon_audit"
+                       columnNames="id, rev"
+                       constraintName="pk_order_addon_audit"/>
+
+        <addForeignKeyConstraint baseTableName="order_addon_audit"
+                                 baseColumnNames="rev"
+                                 constraintName="fk_order_addon_audit_revinfo"
+                                 referencedTableName="revinfo"
+                                 referencedColumnNames="rev"/>
+    </changeSet>
+
 </databaseChangeLog>

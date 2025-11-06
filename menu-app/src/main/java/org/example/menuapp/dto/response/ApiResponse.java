@@ -28,7 +28,6 @@ public class ApiResponse<T> {
         this.data = data;
     }
 
-
     public static <T> ApiResponse<T> success(T data) {
         return new ApiResponse<>(true, "Successfully completed the operation", data);
     }

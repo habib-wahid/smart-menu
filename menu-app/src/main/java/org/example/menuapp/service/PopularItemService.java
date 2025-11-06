@@ -17,9 +17,9 @@ public class PopularItemService {
         this.itemRepository = itemRepository;
     }
 
-    @Cacheable(value = "popular-item", key = "'mostPopular'")
-    public List<PopularItemResponse> getPopularItem() {
-        PageRequest pageRequest = PageRequest.of(0, 20);
-        return itemRepository.getAllPopularItems(pageRequest);
-    }
+//    @Cacheable(value = "popular-item", key = "'mostPopular'")
+//    public List<PopularItemResponse> getPopularItem() {
+//        PageRequest pageRequest = PageRequest.of(0, 20);
+//        return itemRepository.getAllPopularItems(pageRequest);
+//    }
 }

@@ -14,7 +14,7 @@ public class AddonMapper {
                 .description(addOn.getDescription())
                 .price(addOn.getPrice())
                 .filePath(addOn.getFilePath())
-                .fullPathUrl(addOn.getFullPathUrl())
+              //  .fullPathUrl(addOn.getFullPathUrl())
                 .rating(addOn.getRating())
                 .build();
     }

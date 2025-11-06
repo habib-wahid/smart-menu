@@ -60,7 +60,7 @@ public class AddonService {
             Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
 
             addOn.setFilePath(fileName);
-            addOn.setFullPathUrl(targetPath.toString());
+          //  addOn.setFullPathUrl(targetPath.toString());
 
         } catch (IOException e) {
             log.info("Could not copy file: {}", e.getMessage());

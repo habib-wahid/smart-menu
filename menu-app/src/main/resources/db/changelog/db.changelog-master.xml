@@ -7,12 +7,4 @@
 
     <!-- Include your changelog files here -->
     <include file="db/changelog/changes/01-create-initial-schema.xml"/>
-    <include file="db/changelog/changes/02-create-addon-schema.xml"/>
-    <include file="db/changelog/changes/03-create-customer-order-schema.xml"/>
-    <include file="db/changelog/changes/04-alter-order-schema.xml"/>
-    <include file="db/changelog/changes/05-alter-order-item-schema.xml"/>
-    <include file="db/changelog/changes/06-rename-addon-file-path-column.xml"/>
-    <include file="db/changelog/changes/07-audit-table-seq-create-schema.xml"/>
-    <include file="db/changelog/changes/08-order-audit-table-create-schema.xml"/>
-    <include file="db/changelog/changes/09-order-item-audit-table-create.xml"/>
 </databaseChangeLog>

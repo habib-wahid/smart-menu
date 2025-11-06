@@ -1,13 +1,16 @@
 package org.example.menuapp.controller;
 
 import org.example.menuapp.dto.request.ItemRequest;
+import org.example.menuapp.dto.response.ApiResponse;
 import org.example.menuapp.dto.response.ItemResponse;
-import org.example.menuapp.entity.Item;
 import org.example.menuapp.service.ItemService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -23,26 +26,25 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ItemResponse> getItem(@PathVariable Long id) {
-        ItemResponse itemResponse = itemService.getItem(id);
-        return ResponseEntity.status(HttpStatus.OK).body(itemResponse);
+    public ApiResponse<ItemResponse> getItem(@PathVariable Long id) {
+        return ApiResponse.success("Successfully Fetched the Item.", itemService.getItem(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<ItemResponse>> getItems() {
-        return ResponseEntity.ok(itemService.getAllItems());
+    public ApiResponse<List<ItemResponse>> getItems() {
+        return ApiResponse.success(itemService.getAllItems());
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> createItem(
+    public ApiResponse<String> createItem(
             @RequestPart(name = "item") ItemRequest request,
-            @RequestPart(name = "file") MultipartFile file) {
-        Item item = itemService.createItem(request, file);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+            @RequestPart(name = "file", required = false) MultipartFile file) {
+        itemService.createItem(request, file);
+        return ApiResponse.success("Item Created Successfully");
     }
 
     @GetMapping("/by-category/{categoryId}")
-    public ResponseEntity<List<ItemResponse>> getItemsByCategory(@PathVariable Long categoryId) {
-        return ResponseEntity.ok(itemService.getItemsByCategory(categoryId));
+    public ApiResponse<List<ItemResponse>> getItemsByCategory(@PathVariable Long categoryId) {
+        return ApiResponse.success(itemService.getItemsByCategory(categoryId));
     }
 }

@@ -17,8 +17,8 @@ public class PopularItemController {
         this.popularItemService = popularItemService;
     }
 
-    @GetMapping("/popular-item")
-    public ResponseEntity<List<PopularItemResponse>> getPopularItem() {
-        return ResponseEntity.ok(popularItemService.getPopularItem());
-    }
+//    @GetMapping("/popular-item")
+//    public ResponseEntity<List<PopularItemResponse>> getPopularItem() {
+//        return ResponseEntity.ok(popularItemService.getPopularItem());
+//    }
 }

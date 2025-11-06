@@ -1,15 +1,23 @@
 package org.example.menuapp.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity(name = "addon")
 @Getter @Setter
-@AllArgsConstructor @NoArgsConstructor
-@Builder
 public class AddOn {
 
     @Id
@@ -29,17 +37,17 @@ public class AddOn {
     @Column(name = "file_path")
     private String filePath;
 
-    @Column(name = "full_path")
-    private String fullPathUrl;
+    @Column(name = "file_name")
+    private String fileName;
 
     @Column(name = "rating")
     private Double rating;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
+            name = "addon_item",
             joinColumns = @JoinColumn(name = "addon_id"),
             inverseJoinColumns = @JoinColumn(name = "item_id")
     )
-    @Builder.Default
     private Set<Item> item = new HashSet<>();
 }

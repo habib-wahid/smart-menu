@@ -1,7 +1,15 @@
 package org.example.menuapp.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Cacheable;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Column;
+import jakarta.persistence.PrePersist;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -11,9 +19,6 @@ import java.time.LocalDateTime;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "category_cache")
 @Getter @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "category_seq")
@@ -25,9 +30,6 @@ public class Category {
 
     @Column(name = "description")
     private String description;
-
-    @Column(name = "file_path")
-    private String imageUrl;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

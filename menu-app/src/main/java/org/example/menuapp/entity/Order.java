@@ -1,10 +1,17 @@
 package org.example.menuapp.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.envers.AuditTable;
 import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -14,9 +21,8 @@ import java.util.Set;
 @Audited
 @AuditTable(value = "customer_order_audit")
 @Entity(name = "customer_order")
-@AllArgsConstructor @NoArgsConstructor
-@Getter @Setter
-@Builder
+@Getter
+@Setter
 public class Order {
 
     @Id
@@ -57,7 +63,6 @@ public class Order {
     @Column(name = "order_delivery_time")
     private LocalDateTime deliveryTime;
 
-    @Builder.Default
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderItem> orderItems = new HashSet<>();
 

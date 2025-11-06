@@ -8,5 +8,6 @@ public final class ExceptionMessages {
     public static final String FILE_NOT_ABLE_TO_SAVE = "Failed to store the image. Please try again";
     public static final String ORDER_NOT_ABLE_TO_DELETE = "Order can not be deleted with status: %s";
     public static final String ORDER_PROCESSED = "Order is already processed, so cannot be updated";
+    public static final String CATEGORY_NOT_FOUND = "Some categories are not found.";
 }
 

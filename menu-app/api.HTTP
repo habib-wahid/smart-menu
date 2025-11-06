@@ -1,2 +1,19 @@
 
 GET http://localhost:8081/api/category
+
+###
+
+POST http://localhost:8081/api/item
+Content-Type: multipart/form-data; boundary=MyBoundary
+
+--MyBoundary
+Content-Disposition: form-data; name="item"
+Content-Type: application/json
+
+{
+  "name": "Ruti",
+  "description": "A delicious ruti for the menu.",
+  "price": 9.99,
+  "categoryIds": [1]
+}
+--MyBoundary
