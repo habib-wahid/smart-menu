@@ -42,7 +42,7 @@ public class OrderRepositoryUnitTest {
         item = itemRepository.save(item);
 
         OrderItem orderItem = new OrderItem();
-        orderItem.setItem(item);
+      //  orderItem.setItem(item);
         orderItem.setQuantity(2);
         orderItem.setTotalItemPrice(20.0);
         orderItem.setTotalAddonPrice(2.0);
