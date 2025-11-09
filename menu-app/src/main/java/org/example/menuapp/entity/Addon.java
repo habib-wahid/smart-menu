@@ -18,7 +18,7 @@ import java.util.Set;
 
 @Entity(name = "addon")
 @Getter @Setter
-public class AddOn {
+public class Addon {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "addon_seq")

@@ -1,19 +1,13 @@
 package org.example.menuapp.dto.response;
 
-import lombok.*;
 
-import java.util.Set;
+public record AddonResponse(
+        Long id,
+     String name,
+     String description,
+     Double price,
+     String filePath,
+     String fileName,
+     Double rating) {
 
-@AllArgsConstructor @NoArgsConstructor
-@Getter @Setter
-@Builder
-public class AddonResponse {
-    private Long id;
-    private String name;
-    private String description;
-    private Double price;
-    private String filePath;
-    private String fullPathUrl;
-    private Double rating;
-    private Set<Long> itemIds;
 }

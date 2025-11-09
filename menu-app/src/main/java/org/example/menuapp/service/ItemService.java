@@ -9,7 +9,6 @@ import org.example.menuapp.entity.Item;
 import org.example.menuapp.error.custom_exceptions.SmFileStorageException;
 import org.example.menuapp.error.custom_exceptions.SmResourceNotFoundException;
 import org.example.menuapp.error.messages.ExceptionMessages;
-import org.example.menuapp.mapper.AddonMapper;
 import org.example.menuapp.mapper.ItemMapper;
 import org.example.menuapp.repository.ItemRepository;
 import org.springframework.stereotype.Service;
@@ -20,11 +19,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -34,16 +31,13 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final CategoryService categoryService;
     private final FileStorageConfig fileStorageConfig;
-    private final AddonMapper addonMapper;
     private final ItemMapper itemMapper;
 
     public ItemService(ItemRepository itemRepository, CategoryService categoryService,
-                       FileStorageConfig fileStorageConfig, AddonMapper addonMapper,
-                       ItemMapper itemMapper) {
+                       FileStorageConfig fileStorageConfig, ItemMapper itemMapper) {
         this.itemRepository = itemRepository;
         this.categoryService = categoryService;
         this.fileStorageConfig = fileStorageConfig;
-        this.addonMapper = addonMapper;
         this.itemMapper = itemMapper;
     }
 
@@ -68,7 +62,7 @@ public class ItemService {
     public void createItem(ItemRequest request, MultipartFile file) {
         Set<Category> categories = categoryService.getAllCategoriesByIds(request.categoryIds());
         if (categories.size() != request.categoryIds().size()) {
-            throw new SmResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND);
+            throw new SmResourceNotFoundException(ExceptionMessages.SOME_CATEGORIES_ARE_NOT_FOUND);
         }
         String filePath = copyFile(file);
         String fileName = file != null ? file.getOriginalFilename() : null;
@@ -107,18 +101,7 @@ public class ItemService {
 
 
     public Set<Item> getAllItemsByIds(Set<Long> itemIds) {
-        List<Item> items = itemRepository.findAllById(itemIds);
-        Set<Long> ids = items.stream()
-                .map(Item::getId)
-                .collect(Collectors.toSet());
-        itemIds.removeAll(ids);
-        if (!itemIds.isEmpty()) {
-            List<Long> itemListIds = new ArrayList<>(itemIds);
-            throw new SmResourceNotFoundException(
-                   String.format(ExceptionMessages.RESOURCE_NOT_FOUND, "Item", itemListIds.getFirst())
-            );
-        }
-        return new HashSet<>(items);
+        return new HashSet<>(itemRepository.findAllById(itemIds));
     }
 
     public Item getItemById(Long id) {

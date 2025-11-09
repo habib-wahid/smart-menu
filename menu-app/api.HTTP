@@ -17,3 +17,28 @@ Content-Type: application/json
   "categoryIds": [1]
 }
 --MyBoundary
+
+###
+
+### Create Addon with File
+POST http://localhost:8081/api/addon
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="addon"
+Content-Type: application/json
+
+{
+  "name": "French Fry",
+  "description": "French Fry as an addon",
+  "price": 2.50,
+  "itemIds": [1]
+}
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="french_fry.png"
+Content-Type: image/png
+
+< /Users/md.habiburrahman/Downloads/french_fry.png
+
+--WebAppBoundary--

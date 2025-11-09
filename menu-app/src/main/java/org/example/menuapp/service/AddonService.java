@@ -1,87 +1,64 @@
 package org.example.menuapp.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.menuapp.config.FileStorageConfig;
 import org.example.menuapp.dto.request.AddonRequest;
 import org.example.menuapp.dto.response.AddonResponse;
-import org.example.menuapp.entity.AddOn;
+import org.example.menuapp.entity.Addon;
 import org.example.menuapp.entity.Item;
-import org.example.menuapp.error.custom_exceptions.SmFileStorageException;
 import org.example.menuapp.error.custom_exceptions.SmResourceNotFoundException;
 import org.example.menuapp.error.messages.ExceptionMessages;
 import org.example.menuapp.mapper.AddonMapper;
-import org.example.menuapp.repository.AddOnRepository;
+import org.example.menuapp.repository.AddonRepository;
+import org.example.menuapp.utility.FileOperationManager;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AddonService {
 
-    private final AddOnRepository addOnRepository;
-    private final FileStorageConfig fileStorageConfig;
+    private final AddonRepository addOnRepository;
     private final ItemService itemService;
     private final AddonMapper addonMapper;
+    private final FileOperationManager fileOperationManager;
 
-    public AddonService(AddOnRepository addOnRepository, FileStorageConfig fileStorageConfig, ItemService itemService, AddonMapper addonMapper) {
-        this.addOnRepository = addOnRepository;
-        this.fileStorageConfig = fileStorageConfig;
-        this.itemService = itemService;
-        this.addonMapper = addonMapper;
-    }
 
-    public void createAddOn(AddonRequest addonRequest, MultipartFile file) {
-        AddOn addOn = new AddOn();
-        addOn.setName(addonRequest.getName());
-        addOn.setDescription(addonRequest.getDescription());
-        addOn.setPrice(addonRequest.getPrice());
-        if (addonRequest.getItemIds() != null) {
-           Set<Item> itemSet = itemService.getAllItemsByIds(addonRequest.getItemIds());
-           addOn.setItem(itemSet);
+    public void createAddon(AddonRequest addonRequest, MultipartFile file) {
+        System.out.println("File " + file.getOriginalFilename());
+        Set<Item> itemSet = itemService.getAllItemsByIds(addonRequest.itemIds());
+        if (itemSet.size() != addonRequest.itemIds().size()) {
+            throw new SmResourceNotFoundException(ExceptionMessages.SOME_ITEMS_ARE_NOT_FOUND);
         }
 
-        Path uploadPath = fileStorageConfig.getFilepath();
-        try {
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
+        Addon addon = addonMapper.toAddon(addonRequest);
+        addon.setItem(itemSet);
 
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path targetPath = uploadPath.resolve(fileName);
-            Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-
-            addOn.setFilePath(fileName);
-          //  addOn.setFullPathUrl(targetPath.toString());
-
-        } catch (IOException e) {
-            log.info("Could not copy file: {}", e.getMessage());
-            throw new SmFileStorageException(ExceptionMessages.FILE_NOT_ABLE_TO_SAVE);
+        if (!file.isEmpty()) {
+            String filePath = fileOperationManager.copyFile(file);
+            addon.setFileName(file.getOriginalFilename());
+            addon.setFilePath(filePath);
         }
 
-        addOnRepository.save(addOn);
+        addOnRepository.save(addon);
     }
 
 
     public List<AddonResponse> getAllAddons() {
-        List<AddOn> addOnList = addOnRepository.findAll();
-        return addOnList.stream()
-                .map(addonMapper::mapToAddonResponse)
+        List<Addon> addonList = addOnRepository.findAll();
+        return addonList.stream()
+                .map(addonMapper::toAddonResponse)
                 .toList();
     }
 
-    public AddOn getAddOnById(Long id) {
+    public Addon getAddOnById(Long id) {
         return addOnRepository.findById(id).orElseThrow(
                 () -> new SmResourceNotFoundException(
-                        String.format(ExceptionMessages.RESOURCE_NOT_FOUND, "AddOn", id)));
+                        String.format(ExceptionMessages.RESOURCE_NOT_FOUND, "Addon", id)));
     }
 
 }

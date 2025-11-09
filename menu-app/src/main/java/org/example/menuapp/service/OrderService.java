@@ -25,7 +25,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -192,7 +191,7 @@ public class OrderService {
                     .findFirst().orElse(null);
 
             log.info("Addon id : {}",  addonRequest.getOrderAddonId());
-            AddOn addOn = addonService.getAddOnById(addonRequest.getAddonId());
+            Addon addOn = addonService.getAddOnById(addonRequest.getAddonId());
 
             if (currentOrderAddon == null) {
                 OrderAddon orderAddon = buildOrderAddon(addonRequest, addOn);
@@ -224,11 +223,11 @@ public class OrderService {
     }
 
     private OrderAddon createOrderAddon(OrderAddonRequest addonRequest) {
-        AddOn addOn = addonService.getAddOnById(addonRequest.getAddonId());
+        Addon addOn = addonService.getAddOnById(addonRequest.getAddonId());
         return buildOrderAddon(addonRequest, addOn);
     }
 
-    private OrderAddon buildOrderAddon(OrderAddonRequest addonRequest, AddOn addOn) {
+    private OrderAddon buildOrderAddon(OrderAddonRequest addonRequest, Addon addOn) {
         return null;
     }
     private OrderResponse mapToOrderResponse(Order order) {

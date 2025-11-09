@@ -1,21 +1,19 @@
 package org.example.menuapp.mapper;
 
+import org.example.menuapp.dto.request.AddonRequest;
 import org.example.menuapp.dto.response.AddonResponse;
-import org.example.menuapp.entity.AddOn;
-import org.springframework.stereotype.Component;
+import org.example.menuapp.entity.Addon;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Component
-public class AddonMapper {
+@Mapper(componentModel = "spring")
+public interface AddonMapper {
 
-    public AddonResponse mapToAddonResponse(AddOn addOn) {
-        return AddonResponse.builder()
-                .id(addOn.getId())
-                .name(addOn.getName())
-                .description(addOn.getDescription())
-                .price(addOn.getPrice())
-                .filePath(addOn.getFilePath())
-              //  .fullPathUrl(addOn.getFullPathUrl())
-                .rating(addOn.getRating())
-                .build();
-    }
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "fileName", ignore = true)
+    @Mapping(target = "filePath", ignore = true)
+    @Mapping(target = "rating", ignore = true)
+    Addon toAddon(AddonRequest request);
+
+    AddonResponse toAddonResponse(Addon addon);
 }
