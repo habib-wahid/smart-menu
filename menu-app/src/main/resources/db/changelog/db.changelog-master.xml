@@ -7,4 +7,5 @@
 
     <!-- Include your changelog files here -->
     <include file="db/changelog/changes/01-create-initial-schema.xml"/>
+    <include file="db/changelog/changes/02-add-deleted-column-in-order.xml" />
 </databaseChangeLog>

@@ -1,37 +1,30 @@
 package org.example.menuapp.controller;
 
-import jakarta.validation.Valid;
 import net.sf.jasperreports.engine.JRException;
 import org.example.menuapp.dto.redis.OrderSummary;
-import org.example.menuapp.dto.request.OrderRequest;
-import org.example.menuapp.dto.request.StatusUpdateRequest;
 import org.example.menuapp.dto.response.OrderResponse;
 import org.example.menuapp.enums.OrderStatus;
 import org.example.menuapp.service.OrderReportService;
 import org.example.menuapp.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-
 
 
 @RestController
-@RequestMapping("/order")
 public class OrderController {
 
     private final OrderService orderService;
-    private final SimpMessagingTemplate messagingTemplate;
+  //  private final SimpMessagingTemplate messagingTemplate;
     private final OrderReportService orderReportService;
 
-    public OrderController(OrderService orderService, SimpMessagingTemplate messagingTemplate, OrderReportService orderReportService) {
+    public OrderController(OrderService orderService, OrderReportService orderReportService) {
         this.orderService = orderService;
-        this.messagingTemplate = messagingTemplate;
         this.orderReportService = orderReportService;
     }
 
@@ -57,33 +50,7 @@ public class OrderController {
        return ResponseEntity.status(HttpStatus.OK).body(orderSummaries);
     }
 
-    @PostMapping
-    public ResponseEntity<OrderResponse> placeOrder(@Valid @RequestBody OrderRequest orderRequest) {
-        OrderResponse orderResponse = orderService.placeOrder(orderRequest);
-        messagingTemplate.convertAndSend("/topic/orders", orderResponse);
-        return ResponseEntity.status(HttpStatus.CREATED).body(orderResponse);
-    }
 
-    @PutMapping("/{orderId}")
-    public ResponseEntity<OrderResponse> updateOrder(
-            @PathVariable Long orderId,
-            @Valid @RequestBody OrderRequest orderRequest) {
-        OrderResponse orderResponse = orderService.updateOrder(orderId, orderRequest);
-        return ResponseEntity.status(HttpStatus.OK).body(orderResponse);
-    }
-
-    @PatchMapping("/{orderId}/status")
-    public void updateOrderStatus(
-            @PathVariable Long orderId,
-            @RequestBody StatusUpdateRequest statusUpdateRequest) {
-        orderService.updateOrderStatus(orderId, statusUpdateRequest);
-    }
-
-    @DeleteMapping("/{orderId}")
-    public ResponseEntity<Map<String, String>> deleteOrder(@PathVariable Long orderId) {
-        orderService.deleteOrder(orderId);
-        return ResponseEntity.ok(Map.of("message", "Order deleted"));
-    }
 
     @GetMapping("/customer-orders")
     public ResponseEntity<List<OrderSummary>> getCustomerOrdersByStatus(

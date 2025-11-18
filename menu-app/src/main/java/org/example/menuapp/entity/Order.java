@@ -9,7 +9,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.envers.AuditTable;
 import org.hibernate.envers.Audited;
 
@@ -21,8 +24,10 @@ import java.util.Set;
 @Audited
 @AuditTable(value = "customer_order_audit")
 @Entity(name = "customer_order")
-@Getter
-@Setter
+@SQLDelete(sql = "UPDATE customer_order SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted=false")
+@Getter @Setter
+@NoArgsConstructor
 public class Order {
 
     @Id
@@ -50,6 +55,9 @@ public class Order {
 
     @Column(name = "served")
     private Boolean isServed;
+
+    @Column(name = "is_deleted")
+    private boolean isDeleted = false;
 
     @Column(name = "table_no")
     private Integer tableNo;

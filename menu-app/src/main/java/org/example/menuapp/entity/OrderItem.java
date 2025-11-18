@@ -12,6 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.AuditTable;
@@ -25,6 +26,7 @@ import java.util.Set;
 @AuditTable(value = "order_item_audit")
 @Entity(name = "order_item")
 @Getter @Setter
+@NoArgsConstructor
 public class OrderItem {
 
     @Id

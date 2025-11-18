@@ -1,24 +1,15 @@
 package org.example.menuapp.dto.request;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Set;
 
-@Getter @Setter
-public class OrderItemRequest {
-    private Long orderItemId;
+public record OrderItemRequest(
 
-    @NotNull(message = "Id can not be null")
-    private Long itemId;
-
-    @NotNull(message = "Every order must contain item quantity")
-    private Integer quantity;
-
-    private Long price;
-
-    private Set<OrderAddonRequest> orderAddons;
+        @NotNull(message = "Id can not be null")
+        Long itemId,
+        @NotNull(message = "Every order must contain item quantity")
+        Integer quantity,
+        Set<OrderAddonRequest> orderAddons
+) {
 }

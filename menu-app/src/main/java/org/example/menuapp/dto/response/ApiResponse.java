@@ -36,6 +36,10 @@ public class ApiResponse<T> {
         return new ApiResponse<>(true, message, data);
     }
 
+    public static <T> ApiResponse<T> success(String message) {
+        return new ApiResponse<>(true, message, null);
+    }
+
     public static <T> ApiResponse<T> error(List<ErrorDetail> error) {
         ApiResponse<T> response = new ApiResponse<>(false, "Operation Failed", null);
         response.setError(error);

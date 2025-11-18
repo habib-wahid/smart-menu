@@ -1,5 +1,6 @@
 package org.example.menuapp.controller;
 
+import jakarta.validation.Valid;
 import org.example.menuapp.dto.request.ItemRequest;
 import org.example.menuapp.dto.response.ApiResponse;
 import org.example.menuapp.dto.response.ItemResponse;
@@ -37,7 +38,7 @@ public class ItemController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<String> createItem(
-            @RequestPart(name = "item") ItemRequest request,
+            @RequestPart(name = "item") @Valid ItemRequest request,
             @RequestPart(name = "file", required = false) MultipartFile file) {
         itemService.createItem(request, file);
         return ApiResponse.success("Item Created Successfully");

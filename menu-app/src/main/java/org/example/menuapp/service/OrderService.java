@@ -6,15 +6,22 @@ import org.example.menuapp.config.ConstantKeys;
 import org.example.menuapp.dto.redis.OrderAddonSummary;
 import org.example.menuapp.dto.redis.OrderItemSummary;
 import org.example.menuapp.dto.redis.OrderSummary;
-import org.example.menuapp.dto.request.*;
+import org.example.menuapp.dto.request.OrderAddonRequest;
+import org.example.menuapp.dto.request.OrderItemRequest;
+import org.example.menuapp.dto.request.OrderRequest;
+import org.example.menuapp.dto.request.OrderStatusUpdateRequest;
 import org.example.menuapp.dto.response.OrderAddonResponse;
 import org.example.menuapp.dto.response.OrderItemResponse;
 import org.example.menuapp.dto.response.OrderResponse;
-import org.example.menuapp.entity.*;
+import org.example.menuapp.entity.Addon;
+import org.example.menuapp.entity.Item;
+import org.example.menuapp.entity.Order;
+import org.example.menuapp.entity.OrderAddon;
+import org.example.menuapp.entity.OrderItem;
 import org.example.menuapp.enums.OrderStatus;
 import org.example.menuapp.error.custom_exceptions.OrderDeletionException;
-import org.example.menuapp.error.custom_exceptions.SmUpdateNotAllowedException;
 import org.example.menuapp.error.custom_exceptions.SmResourceNotFoundException;
+import org.example.menuapp.error.custom_exceptions.SmUpdateNotAllowedException;
 import org.example.menuapp.error.messages.ExceptionMessages;
 import org.example.menuapp.repository.OrderRepository;
 import org.springframework.data.domain.Page;
@@ -26,7 +33,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -48,29 +60,17 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponse placeOrder(OrderRequest orderRequest) {
+    public void placeOrder(OrderRequest orderRequest) {
+        Set<Item> itemSet = fetchAndValidateItems(orderRequest);
+        Set<Addon> addonSet = fetchAndValidateAddons(orderRequest);
         Order order = getOrder(orderRequest);
-        double totalItemPrice = 0.0;
-        double totalAddonPrice = 0.0;
+        Set<OrderItem> orderItems = orderRequest.orderItems().stream()
+                .map(orderItemRequest -> createOrderItem(orderItemRequest, itemSet, addonSet))
+                .collect(Collectors.toSet());
 
-        for (OrderItemRequest orderItemRequest : orderRequest.getOrderItems()) {
-            OrderItem orderItem = getOrderItem(orderItemRequest, null);
-            totalItemPrice += orderItem.getTotalItemPrice();
-            totalAddonPrice += orderItem.getTotalAddonPrice();
-            order.addOrderItem(orderItem);
-        }
-
-
-        order.setTotalPrice(totalItemPrice + totalAddonPrice);
-        order.setTotalItemPrice(totalItemPrice);
-        order.setTotalAddonPrice(totalAddonPrice);
-        Order response = orderRepository.save(order);
-        try {
-            cacheOrderDetails(response);
-        } catch (Exception e) {
-            log.error("Failed to cache order details", e);
-        }
-        return mapToOrderResponse(response);
+        orderItems.forEach(order::addOrderItem);
+        calculateAndSetTotals(order, orderItems);
+        orderRepository.save(order);
     }
 
 
@@ -87,38 +87,11 @@ public class OrderService {
         return mapToOrderResponse(updateOrderItem(currentOrder, orderRequest));
     }
 
-    private Order updateOrderItem(Order currentOrder, OrderRequest orderRequest) {
-        currentOrder.setTableNo(orderRequest.getTableNumber());
-        double totalItemPrice = 0.0;
-        double totalAddonPrice = 0.0;
-
-        for (OrderItemRequest orderItem : orderRequest.getOrderItems()) {
-            OrderItem currentOrderItem = findCurrentOrderItem(currentOrder, orderItem.getOrderItemId());
-            Item item = itemService.getItemById(orderItem.getItemId());
-
-            if (currentOrderItem == null) {
-                currentOrderItem = getOrderItem(orderItem, item);
-                currentOrder.addOrderItem(currentOrderItem);
-            } else {
-                updateExistingOrderItem(currentOrderItem, orderItem, item);
-            }
-
-            totalItemPrice += currentOrderItem.getTotalItemPrice();
-            totalAddonPrice += currentOrderItem.getTotalAddonPrice();
-        }
-
-        currentOrder.setTotalItemPrice(totalItemPrice);
-        currentOrder.setTotalAddonPrice(totalAddonPrice);
-        currentOrder.setTotalPrice(totalItemPrice + totalAddonPrice);
-        currentOrder.setUpdateTime(LocalDateTime.now());
-        return orderRepository.save(currentOrder);
-    }
-
     @Transactional
-    public void updateOrderStatus(Long orderId, StatusUpdateRequest statusUpdateRequest) {
+    public void updateOrderStatus(Long orderId, OrderStatusUpdateRequest orderStatusUpdateRequest) {
         Order order = getOrderById(orderId);
-        order.setOrderStatus(statusUpdateRequest.getStatus().getStatus());
-        removeOrderFromCache(order);
+        order.setOrderStatus(orderStatusUpdateRequest.status().getStatus());
+        order.setUpdateTime(LocalDateTime.now());
         orderRepository.save(order);
     }
 
@@ -139,7 +112,7 @@ public class OrderService {
     public void deleteOrder(Long orderId) {
         Order order = getOrderById(orderId);
         if (order.getOrderStatus().equals(OrderStatus.PROCESSING.getStatus())
-            || order.getOrderStatus().equals(OrderStatus.COMPLETED.getStatus())
+                || order.getOrderStatus().equals(OrderStatus.COMPLETED.getStatus())
         ) {
             throw new OrderDeletionException(
                     String.format(ExceptionMessages.ORDER_NOT_ABLE_TO_DELETE, order.getOrderStatus()));
@@ -155,26 +128,29 @@ public class OrderService {
 
     private Order getOrder(OrderRequest orderRequest) {
         Order order = new Order();
-        order.setUserId(orderRequest.getUserId());
+        order.setUserId(orderRequest.userId());
         order.setOrderStatus(OrderStatus.PLACED.getStatus());
         order.setIsServed(false);
         order.setIsPaid(false);
-        order.setTableNo(orderRequest.getTableNumber());
+        order.setTableNo(orderRequest.tableNumber());
         order.setOrderTime(LocalDateTime.now());
         order.setUpdateTime(LocalDateTime.now());
         return order;
     }
 
-    private OrderItem getOrderItem(OrderItemRequest orderItemRequest, Item requestItem) {
-        // todo : need to get all the items at a time
-        Item item = resolveItem(orderItemRequest, requestItem);
-        OrderItem orderItem = new OrderItem();
-     //   orderItem.setItem(item);
-        orderItem.setQuantity(orderItemRequest.getQuantity());
-        orderItem.setTotalItemPrice(orderItemRequest.getQuantity() * item.getPrice());
 
-        if (orderItemRequest.getOrderAddons() != null) {
-           processAddons(orderItemRequest, orderItem);
+    private OrderItem createOrderItem(OrderItemRequest orderItemRequest, Set<Item> itemSet, Set<Addon> addonSet) {
+        Item currentItem = itemSet.stream()
+                .filter(item -> Objects.equals(item.getId(), orderItemRequest.itemId()))
+                .findFirst().orElseThrow(() -> new SmResourceNotFoundException("Item not found"));
+
+        OrderItem orderItem = new OrderItem();
+        orderItem.setQuantity(orderItemRequest.quantity());
+        orderItem.setItemId(orderItemRequest.itemId());
+        orderItem.setTotalItemPrice(orderItemRequest.quantity() * currentItem.getPrice());
+
+        if (orderItemRequest.orderAddons() != null && !orderItemRequest.orderAddons().isEmpty()) {
+            processAddons(orderItem, addonSet, orderItemRequest.orderAddons());
         } else {
             orderItem.setTotalAddonPrice(0.0);
             orderItem.setTotalPrice(orderItem.getTotalItemPrice());
@@ -183,38 +159,141 @@ public class OrderService {
         return orderItem;
     }
 
+    private Set<Item> fetchAndValidateItems(OrderRequest orderRequest) {
+        Set<Long> orderItemIds = orderRequest.orderItems()
+                .stream()
+                .map(OrderItemRequest::itemId)
+                .collect(Collectors.toSet());
+
+        Set<Item> itemSet = itemService.getAllItemsByIds(orderItemIds);
+
+        if (itemSet.size() != orderItemIds.size()) {
+            throw new SmResourceNotFoundException(ExceptionMessages.SOME_ITEMS_ARE_NOT_FOUND);
+        }
+
+        return itemSet;
+    }
+
+    private Set<Addon> fetchAndValidateAddons(OrderRequest orderRequest) {
+        Set<Long> orderAddonIds = orderRequest.orderItems()
+                .stream()
+                .filter(orderItem -> orderItem.orderAddons() != null)
+                .flatMap(orderItem -> orderItem.orderAddons().stream())
+                .map(OrderAddonRequest::addonId)
+                .collect(Collectors.toSet());
+
+        Set<Addon> addonSet = addonService.getAllAddonsByIds(orderAddonIds);
+
+        if (addonSet.size() != orderAddonIds.size()) {
+            throw new SmResourceNotFoundException(ExceptionMessages.SOME_ADDONS_ARE_NOT_FOUND);
+        }
+
+        return addonSet;
+    }
+
+    private void calculateAndSetTotals(Order order, Set<OrderItem> orderItems) {
+        double totalItemPrice = orderItems.stream()
+                .mapToDouble(OrderItem::getTotalItemPrice)
+                .sum();
+        double totalAddonPrice = orderItems.stream()
+                .mapToDouble(OrderItem::getTotalAddonPrice)
+                .sum();
+
+        order.setTotalItemPrice(totalItemPrice);
+        order.setTotalAddonPrice(totalAddonPrice);
+        order.setTotalPrice(totalItemPrice + totalAddonPrice);
+    }
+
+
+    private Order updateOrderItem(Order currentOrder, OrderRequest orderRequest) {
+        // currentOrder.setTableNo(orderRequest.getTableNumber());
+        double totalItemPrice = 0.0;
+        double totalAddonPrice = 0.0;
+
+        for (OrderItemRequest orderItem : orderRequest.orderItems()) {
+            OrderItem currentOrderItem = findCurrentOrderItem(currentOrder, orderItem.itemId());
+            Item item = itemService.getItemById(orderItem.itemId());
+
+            if (currentOrderItem == null) {
+                currentOrderItem = getOrderItem(orderItem, item);
+                currentOrder.addOrderItem(currentOrderItem);
+            } else {
+                updateExistingOrderItem(currentOrderItem, orderItem, item);
+            }
+
+            totalItemPrice += currentOrderItem.getTotalItemPrice();
+            totalAddonPrice += currentOrderItem.getTotalAddonPrice();
+        }
+
+        currentOrder.setTotalItemPrice(totalItemPrice);
+        currentOrder.setTotalAddonPrice(totalAddonPrice);
+        currentOrder.setTotalPrice(totalItemPrice + totalAddonPrice);
+        currentOrder.setUpdateTime(LocalDateTime.now());
+        return orderRepository.save(currentOrder);
+    }
+
+    private OrderItem getOrderItem(OrderItemRequest orderItemRequest, Item requestItem) {
+        // todo
+        //  : need to get all the items at a time
+        Item item = resolveItem(orderItemRequest, requestItem);
+        OrderItem orderItem = new OrderItem();
+        //   orderItem.setItem(item);
+        // orderItem.setQuantity(orderItemRequest.getQuantity());
+        //  orderItem.setTotalItemPrice(orderItemRequest.getQuantity() * item.getPrice());
+//
+//        if (orderItemRequest.getOrderAddons() != null) {
+//           processAddons(orderItemRequest, orderItem);
+//        } else {
+//            orderItem.setTotalAddonPrice(0.0);
+//            orderItem.setTotalPrice(orderItem.getTotalItemPrice());
+//        }
+
+        return orderItem;
+    }
+
     private void processUpdateAddons(OrderItemRequest orderItem, OrderItem currentOrderItem) {
         double totalAddonPriceForItem = 0.0;
-        for (OrderAddonRequest addonRequest : orderItem.getOrderAddons()) {
-            OrderAddon currentOrderAddon = currentOrderItem.getOrderAddons().stream()
-                    .filter(addon -> Objects.equals(addon.getId(), addonRequest.getOrderAddonId()))
-                    .findFirst().orElse(null);
-
-            log.info("Addon id : {}",  addonRequest.getOrderAddonId());
-            Addon addOn = addonService.getAddOnById(addonRequest.getAddonId());
-
-            if (currentOrderAddon == null) {
-                OrderAddon orderAddon = buildOrderAddon(addonRequest, addOn);
-                totalAddonPriceForItem += orderAddon.getPrice();
-                currentOrderItem.addOrderAddon(orderAddon);
-            } else {
-                currentOrderAddon.setQuantity(addonRequest.getQuantity());
-                currentOrderAddon.setPrice(addonRequest.getQuantity() * addOn.getPrice());
-                totalAddonPriceForItem += currentOrderAddon.getPrice();
-            }
-        }
+//        for (OrderAddonRequest addonRequest : orderItem.getOrderAddons()) {
+//            OrderAddon currentOrderAddon = currentOrderItem.getOrderAddons().stream()
+//                    .filter(addon -> Objects.equals(addon.getId(), addonRequest.getOrderAddonId()))
+//                    .findFirst().orElse(null);
+//
+//            log.info("Addon id : {}",  addonRequest.getOrderAddonId());
+//            Addon addOn = addonService.getAddOnById(addonRequest.getAddonId());
+//
+//            if (currentOrderAddon == null) {
+//                OrderAddon orderAddon = buildOrderAddon(addonRequest, addOn);
+//                totalAddonPriceForItem += orderAddon.getPrice();
+//                currentOrderItem.addOrderAddon(orderAddon);
+//            } else {
+//                currentOrderAddon.setQuantity(addonRequest.getQuantity());
+//                currentOrderAddon.setPrice(addonRequest.getQuantity() * addOn.getPrice());
+//                totalAddonPriceForItem += currentOrderAddon.getPrice();
+//            }
+//        }
 
         currentOrderItem.setTotalAddonPrice(totalAddonPriceForItem);
         currentOrderItem.setTotalPrice(totalAddonPriceForItem + currentOrderItem.getTotalItemPrice());
     }
 
-    private void processAddons(OrderItemRequest orderItemRequest, OrderItem orderItem) {
-        double totalAddonPrice = orderItemRequest.getOrderAddons()
+    private void processAddons(OrderItem orderItem, Set<Addon> addonSet, Set<OrderAddonRequest> addonRequests) {
+        double totalAddonPrice = addonRequests
                 .stream()
                 .mapToDouble(addonRequest -> {
-                    OrderAddon orderAddon = createOrderAddon(addonRequest);
+
+                    Addon currentAddon = addonSet.stream()
+                            .filter(addon -> Objects.equals(addon.getId(), addonRequest.addonId()))
+                            .findFirst()
+                            .orElseThrow(() -> new SmResourceNotFoundException("Addon not found"));
+                    double addonPrice = currentAddon.getPrice() * addonRequest.quantity();
+
+                    OrderAddon orderAddon = new OrderAddon();
+                    orderAddon.setAddonId(addonRequest.addonId());
+                    orderAddon.setQuantity(addonRequest.quantity());
+                    orderAddon.setPrice(addonPrice);
+
                     orderItem.addOrderAddon(orderAddon);
-                    return orderAddon.getPrice();
+                    return addonPrice;
                 })
                 .sum();
 
@@ -223,13 +302,14 @@ public class OrderService {
     }
 
     private OrderAddon createOrderAddon(OrderAddonRequest addonRequest) {
-        Addon addOn = addonService.getAddOnById(addonRequest.getAddonId());
+        Addon addOn = addonService.getAddOnById(addonRequest.addonId());
         return buildOrderAddon(addonRequest, addOn);
     }
 
     private OrderAddon buildOrderAddon(OrderAddonRequest addonRequest, Addon addOn) {
         return null;
     }
+
     private OrderResponse mapToOrderResponse(Order order) {
         return OrderResponse.builder()
                 .orderId(order.getId())
@@ -254,23 +334,24 @@ public class OrderService {
 
 
     private void updateExistingOrderItem(OrderItem currentOrderItem, OrderItemRequest orderItem, Item item) {
-        double currentItemTotalPrice = orderItem.getQuantity() * item.getPrice();
-        currentOrderItem.setQuantity(orderItem.getQuantity());
-        currentOrderItem.setTotalItemPrice(currentItemTotalPrice);
-
-        if (orderItem.getOrderAddons() != null) {
-            removeAddonsFromOrderItem(currentOrderItem, orderItem.getOrderAddons());
-            processUpdateAddons(orderItem, currentOrderItem);
-        } else if (orderItem.getOrderAddons() == null && currentOrderItem.getOrderAddons() != null) {
-            currentOrderItem.setTotalAddonPrice(0.0);
-            currentOrderItem.setTotalPrice(currentItemTotalPrice);
-            currentOrderItem.getOrderAddons().clear();
-        }
+//        double currentItemTotalPrice = orderItem.getQuantity() * item.getPrice();
+//        currentOrderItem.setQuantity(orderItem.getQuantity());
+//        currentOrderItem.setTotalItemPrice(currentItemTotalPrice);
+//
+//        if (orderItem.getOrderAddons() != null) {
+//            removeAddonsFromOrderItem(currentOrderItem, orderItem.getOrderAddons());
+//            processUpdateAddons(orderItem, currentOrderItem);
+//        } else if (orderItem.getOrderAddons() == null && currentOrderItem.getOrderAddons() != null) {
+//            currentOrderItem.setTotalAddonPrice(0.0);
+//            currentOrderItem.setTotalPrice(currentItemTotalPrice);
+//            currentOrderItem.getOrderAddons().clear();
+//        }
     }
 
     private Item resolveItem(OrderItemRequest orderItemRequest, Item requestItem) {
-        return requestItem != null ? requestItem : itemService.getItemById(orderItemRequest.getItemId());
+        return requestItem != null ? requestItem : itemService.getItemById(orderItemRequest.itemId());
     }
+
     private List<OrderItemResponse> getOrderItemList(Set<OrderItem> orderItemList) {
         List<OrderItemResponse> orderItemResponseList = new ArrayList<>();
         orderItemList.forEach(orderItem -> orderItemResponseList.add(mapToOrderItemResponse(orderItem)));
@@ -287,9 +368,9 @@ public class OrderService {
         return OrderItemResponse.builder()
                 .orderItemId(orderItem.getId())
                 .orderId(orderItem.getOrder().getId())
-              //  .itemId(orderItem.getItem().getId())
-             //   .itemName(orderItem.getItem().getName())
-             //   .itemUnitPrice(orderItem.getItem().getPrice())
+                //  .itemId(orderItem.getItem().getId())
+                //   .itemName(orderItem.getItem().getName())
+                //   .itemUnitPrice(orderItem.getItem().getPrice())
                 .quantity(orderItem.getQuantity())
                 .totalPrice(orderItem.getTotalPrice())
                 .orderAddons(getOrderAddonList(orderItem.getOrderAddons()))
@@ -300,9 +381,9 @@ public class OrderService {
         return OrderAddonResponse.builder()
                 .orderAddonId(orderAddon.getId())
                 .orderItemId(orderAddon.getOrderItem().getId())
-              //  .addonId(orderAddon.getAddOn().getId())
-               // .addonName(orderAddon.getAddOn().getName())
-              //  .addonUnitPrice(orderAddon.getAddOn().getPrice())
+                //  .addonId(orderAddon.getAddOn().getId())
+                // .addonName(orderAddon.getAddOn().getName())
+                //  .addonUnitPrice(orderAddon.getAddOn().getPrice())
                 .quantity(orderAddon.getQuantity())
                 .totalPrice(orderAddon.getPrice())
                 .build();
@@ -312,8 +393,8 @@ public class OrderService {
         Set<Long> currentOrderItemIds = currentOrder.getOrderItems()
                 .stream().map(OrderItem::getId).collect(Collectors.toSet());
 
-        Set<Long> currentOrderRequestItemIds = orderRequest.getOrderItems()
-                .stream().map(OrderItemRequest::getOrderItemId)
+        Set<Long> currentOrderRequestItemIds = orderRequest.orderItems()
+                .stream().map(OrderItemRequest::itemId)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
@@ -340,7 +421,7 @@ public class OrderService {
             return;
 
         Set<Long> currentOrderItemAddonRequestIds = orderAddonRequest.stream()
-                .map(OrderAddonRequest::getOrderAddonId)
+                .map(OrderAddonRequest::addonId)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
@@ -361,7 +442,7 @@ public class OrderService {
 
     public List<OrderResponse> getAllOrdersByStatus(OrderStatus orderStatus, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("orderTime").descending());
-        Page<Order> allOrders =  orderRepository.findAllByOrderStatus(orderStatus.getStatus(), pageable);
+        Page<Order> allOrders = orderRepository.findAllByOrderStatus(orderStatus.getStatus(), pageable);
         return allOrders.stream().map(this::mapToOrderResponse).collect(Collectors.toList());
     }
 
@@ -381,14 +462,15 @@ public class OrderService {
                 .orderItemSummaryList(getOrderItemSummeryList(order.getOrderItems()))
                 .build();
     }
+
     private List<OrderItemSummary> getOrderItemSummeryList(Set<OrderItem> orderItems) {
         return orderItems
                 .stream()
                 .map(orderItem -> OrderItemSummary
                         .builder()
                         .orderItemId(orderItem.getId())
-                      //  .itemId(orderItem.getItem().getId())
-                      //  .itemName(orderItem.getItem().getName())
+                        //  .itemId(orderItem.getItem().getId())
+                        //  .itemName(orderItem.getItem().getName())
                         .quantity(orderItem.getQuantity())
                         .orderAddonSummaryList(getOrderAddonSummeryList(orderItem.getOrderAddons()))
                         .build())
@@ -399,8 +481,8 @@ public class OrderService {
         return orderAddons.stream().map(orderAddon -> OrderAddonSummary
                 .builder()
                 .orderAddonId(orderAddon.getId())
-             //   .addonId(orderAddon.getAddOn().getId())
-              //  .addonName(orderAddon.getAddOn().getName())
+                //   .addonId(orderAddon.getAddOn().getId())
+                //  .addonName(orderAddon.getAddOn().getName())
                 .quantity(orderAddon.getQuantity())
                 .build()).toList();
     }
@@ -410,7 +492,7 @@ public class OrderService {
         if (summaries != null) {
             return summaries
                     .stream()
-                    .map (obj -> objectMapper.convertValue(obj, OrderSummary.class))
+                    .map(obj -> objectMapper.convertValue(obj, OrderSummary.class))
                     .toList();
         }
 

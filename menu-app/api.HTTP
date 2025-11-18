@@ -11,10 +11,10 @@ Content-Disposition: form-data; name="item"
 Content-Type: application/json
 
 {
-  "name": "Ruti",
-  "description": "A delicious ruti for the menu.",
-  "price": 9.99,
-  "categoryIds": [1]
+  "name": "Beef vuna",
+  "description": "Special Beef vuna",
+  "price": 249.99,
+  "categoryIds": [2]
 }
 --MyBoundary
 
@@ -29,16 +29,17 @@ Content-Disposition: form-data; name="addon"
 Content-Type: application/json
 
 {
-  "name": "French Fry",
-  "description": "French Fry as an addon",
-  "price": 2.50,
-  "itemIds": [1]
+  "name": "Coca Cola",
+  "description": "Refreshing Beverage",
+  "price": 25.00,
+  "itemIds": [1,5,6]
 }
 
 --WebAppBoundary
-Content-Disposition: form-data; name="file"; filename="french_fry.png"
-Content-Type: image/png
 
-< /Users/md.habiburrahman/Downloads/french_fry.png
-
---WebAppBoundary--
+#Content-Disposition: form-data; name="file"; filename="french_fry.png"
+#Content-Type: image/png
+#
+#< /Users/md.habiburrahman/Downloads/french_fry.png
+#
+#--WebAppBoundary--

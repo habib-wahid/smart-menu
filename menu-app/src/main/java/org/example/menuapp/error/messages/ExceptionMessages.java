@@ -10,5 +10,6 @@ public final class ExceptionMessages {
     public static final String ORDER_PROCESSED = "Order is already processed, so cannot be updated";
     public static final String SOME_CATEGORIES_ARE_NOT_FOUND = "Some categories are not found.";
     public static final String SOME_ITEMS_ARE_NOT_FOUND = "Some items are not found.";
+    public static final String SOME_ADDONS_ARE_NOT_FOUND = "Some addons are not found.";
 }
 

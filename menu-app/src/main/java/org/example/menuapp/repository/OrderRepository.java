@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -31,4 +32,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "orderItems.orderAddons.addOn"
     })
     Page<Order> findAllByUserIdAndOrderStatus(Long customerId,String orderStatus, Pageable pageable);
+
+    @Modifying
+    @Query(value = "UPDATE customer_order SET order_status =:status WHERE id = :orderId", nativeQuery = true)
+    void updateOrderStatus(@Param("orderId") Long orderId, @Param("status") String status);
 }

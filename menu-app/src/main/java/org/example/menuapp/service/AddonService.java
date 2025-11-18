@@ -14,6 +14,7 @@ import org.example.menuapp.utility.FileOperationManager;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -29,7 +30,7 @@ public class AddonService {
 
 
     public void createAddon(AddonRequest addonRequest, MultipartFile file) {
-        System.out.println("File " + file.getOriginalFilename());
+      //  System.out.println("File " + file.getOriginalFilename());
         Set<Item> itemSet = itemService.getAllItemsByIds(addonRequest.itemIds());
         if (itemSet.size() != addonRequest.itemIds().size()) {
             throw new SmResourceNotFoundException(ExceptionMessages.SOME_ITEMS_ARE_NOT_FOUND);
@@ -38,7 +39,7 @@ public class AddonService {
         Addon addon = addonMapper.toAddon(addonRequest);
         addon.setItem(itemSet);
 
-        if (!file.isEmpty()) {
+        if (file != null && !file.isEmpty()) {
             String filePath = fileOperationManager.copyFile(file);
             addon.setFileName(file.getOriginalFilename());
             addon.setFilePath(filePath);
@@ -59,6 +60,10 @@ public class AddonService {
         return addOnRepository.findById(id).orElseThrow(
                 () -> new SmResourceNotFoundException(
                         String.format(ExceptionMessages.RESOURCE_NOT_FOUND, "Addon", id)));
+    }
+
+    public Set<Addon> getAllAddonsByIds(Set<Long> ids) {
+       return new HashSet<>(addOnRepository.findAllById(ids));
     }
 
 }

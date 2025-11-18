@@ -1,21 +1,23 @@
 package org.example.menuapp.dto.request;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Set;
 
-@Getter @Setter
-public class OrderRequest {
-    private Long userId;
+public record OrderRequest(
 
-    @NotNull(message = "Must provide table number")
-    @Positive
-    private Integer tableNumber;
+        @NotNull(message = "Must provide user id")
+        Long userId,
+        @NotNull(message = "Must provide table number")
+        @Positive
+        Integer tableNumber,
 
-    @Valid
-    private Set<OrderItemRequest> orderItems;
+        @Valid
+        @NotNull(message = "Order must contain items")
+        @NotEmpty(message = "Order must contain at least one item")
+        Set<OrderItemRequest> orderItems
+) {
 }
