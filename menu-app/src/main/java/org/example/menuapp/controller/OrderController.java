@@ -2,6 +2,8 @@ package org.example.menuapp.controller;
 
 import net.sf.jasperreports.engine.JRException;
 import org.example.menuapp.dto.redis.OrderSummary;
+import org.example.menuapp.dto.response.ApiResponse;
+import org.example.menuapp.dto.response.CustomerOrderSummary;
 import org.example.menuapp.dto.response.OrderResponse;
 import org.example.menuapp.enums.OrderStatus;
 import org.example.menuapp.service.OrderReportService;
@@ -9,6 +11,7 @@ import org.example.menuapp.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +29,16 @@ public class OrderController {
     public OrderController(OrderService orderService, OrderReportService orderReportService) {
         this.orderService = orderService;
         this.orderReportService = orderReportService;
+    }
+
+    @GetMapping("/customers/{customerId}/orders")
+    public ApiResponse<List<CustomerOrderSummary>> getCustomerOrdersByStatus(
+            @PathVariable Long customerId,
+            @RequestParam(name = "orderStatus") OrderStatus orderStatus,
+            @RequestParam(name = "page", defaultValue = "0") Integer page,
+            @RequestParam(name = "size", defaultValue = "10") Integer size) {
+        List<CustomerOrderSummary> orderSummaries = orderService.getAllOrdersOfCustomer(customerId, orderStatus, page, size);
+        return ApiResponse.success("Order Fetched Successfully", orderSummaries);
     }
 
     //todo need two apis. 1. Get all orders of a customer based on placed, processing, finish. 2. Get order details of a customer order
@@ -50,17 +63,6 @@ public class OrderController {
        return ResponseEntity.status(HttpStatus.OK).body(orderSummaries);
     }
 
-
-
-    @GetMapping("/customer-orders")
-    public ResponseEntity<List<OrderSummary>> getCustomerOrdersByStatus(
-            @RequestParam(name = "customerId") Long customerId,
-            @RequestParam(name = "orderStatus") OrderStatus orderStatus,
-            @RequestParam(name = "page", defaultValue = "0") Integer page,
-            @RequestParam(name = "size", defaultValue = "10") Integer size) {
-        List<OrderSummary> orderSummaries = orderService.getAllOrdersOfCustomer(customerId, orderStatus, page, size);
-        return ResponseEntity.status(HttpStatus.OK).body(orderSummaries);
-    }
 
     @GetMapping("/report")
     public String getOrderReport() throws JRException, IOException {

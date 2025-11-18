@@ -81,7 +81,7 @@ public class Order {
     }
 
     public void removeOrderItem(List<OrderItem> items) {
-        orderItems.removeAll(items);
+        items.forEach(orderItems::remove);
         items.forEach(item -> item.setOrder(null));
     }
 

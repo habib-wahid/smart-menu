@@ -10,6 +10,9 @@ import org.example.menuapp.dto.request.OrderAddonRequest;
 import org.example.menuapp.dto.request.OrderItemRequest;
 import org.example.menuapp.dto.request.OrderRequest;
 import org.example.menuapp.dto.request.OrderStatusUpdateRequest;
+import org.example.menuapp.dto.response.CustomerOrderAddonSummary;
+import org.example.menuapp.dto.response.CustomerOrderItemSummary;
+import org.example.menuapp.dto.response.CustomerOrderSummary;
 import org.example.menuapp.dto.response.OrderAddonResponse;
 import org.example.menuapp.dto.response.OrderItemResponse;
 import org.example.menuapp.dto.response.OrderResponse;
@@ -35,7 +38,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -75,16 +77,28 @@ public class OrderService {
 
 
     @Transactional
-    public OrderResponse updateOrder(Long orderId, OrderRequest orderRequest) {
-        Order currentOrder = orderRepository.findOrderWithDetailsById(orderId)
+    public void updateOrder(Long orderId, OrderRequest orderRequest) {
+        Order currentOrder = orderRepository.findOrderWitOrderItemsById(orderId)
                 .orElseThrow(() -> new SmResourceNotFoundException(
                         String.format(ExceptionMessages.RESOURCE_NOT_FOUND, "Order", orderId)));
 
         if (!currentOrder.getOrderStatus().equals(OrderStatus.PLACED.getStatus())) {
             throw new SmUpdateNotAllowedException(ExceptionMessages.ORDER_PROCESSED);
         }
-        removeItemsFromOrder(currentOrder, orderRequest);
-        return mapToOrderResponse(updateOrderItem(currentOrder, orderRequest));
+
+        removeItemsFromCurrentOrder(currentOrder);
+
+        Set<Item> itemSet = fetchAndValidateItems(orderRequest);
+        Set<Addon> addonSet = fetchAndValidateAddons(orderRequest);
+
+        Set<OrderItem> orderItems = orderRequest.orderItems().stream()
+                .map(orderItemRequest -> createOrderItem(orderItemRequest, itemSet, addonSet))
+                .collect(Collectors.toSet());
+
+        orderItems.forEach(currentOrder::addOrderItem);
+        calculateAndSetTotals(currentOrder, orderItems);
+        currentOrder.setUpdateTime(LocalDateTime.now());
+        orderRepository.save(currentOrder);
     }
 
     @Transactional
@@ -95,18 +109,6 @@ public class OrderService {
         orderRepository.save(order);
     }
 
-    private void removeOrderFromCache(Order order) {
-        OrderSummary summary = getOrderSummary(order);
-        List<Object> orders = redisTemplate.opsForList().range(ConstantKeys.ORDERS_KEY, 0, -1);
-        if (orders != null) {
-            for (int i = 0; i < orders.size(); i++) {
-                OrderSummary orderSummary = objectMapper.convertValue(orders.get(i), OrderSummary.class);
-                if (summary.getOrderId().equals(orderSummary.getOrderId())) {
-                    redisTemplate.opsForList().remove(ConstantKeys.ORDERS_KEY, 1, orderSummary);
-                }
-            }
-        }
-    }
 
     @Transactional
     public void deleteOrder(Long orderId) {
@@ -204,78 +206,6 @@ public class OrderService {
         order.setTotalPrice(totalItemPrice + totalAddonPrice);
     }
 
-
-    private Order updateOrderItem(Order currentOrder, OrderRequest orderRequest) {
-        // currentOrder.setTableNo(orderRequest.getTableNumber());
-        double totalItemPrice = 0.0;
-        double totalAddonPrice = 0.0;
-
-        for (OrderItemRequest orderItem : orderRequest.orderItems()) {
-            OrderItem currentOrderItem = findCurrentOrderItem(currentOrder, orderItem.itemId());
-            Item item = itemService.getItemById(orderItem.itemId());
-
-            if (currentOrderItem == null) {
-                currentOrderItem = getOrderItem(orderItem, item);
-                currentOrder.addOrderItem(currentOrderItem);
-            } else {
-                updateExistingOrderItem(currentOrderItem, orderItem, item);
-            }
-
-            totalItemPrice += currentOrderItem.getTotalItemPrice();
-            totalAddonPrice += currentOrderItem.getTotalAddonPrice();
-        }
-
-        currentOrder.setTotalItemPrice(totalItemPrice);
-        currentOrder.setTotalAddonPrice(totalAddonPrice);
-        currentOrder.setTotalPrice(totalItemPrice + totalAddonPrice);
-        currentOrder.setUpdateTime(LocalDateTime.now());
-        return orderRepository.save(currentOrder);
-    }
-
-    private OrderItem getOrderItem(OrderItemRequest orderItemRequest, Item requestItem) {
-        // todo
-        //  : need to get all the items at a time
-        Item item = resolveItem(orderItemRequest, requestItem);
-        OrderItem orderItem = new OrderItem();
-        //   orderItem.setItem(item);
-        // orderItem.setQuantity(orderItemRequest.getQuantity());
-        //  orderItem.setTotalItemPrice(orderItemRequest.getQuantity() * item.getPrice());
-//
-//        if (orderItemRequest.getOrderAddons() != null) {
-//           processAddons(orderItemRequest, orderItem);
-//        } else {
-//            orderItem.setTotalAddonPrice(0.0);
-//            orderItem.setTotalPrice(orderItem.getTotalItemPrice());
-//        }
-
-        return orderItem;
-    }
-
-    private void processUpdateAddons(OrderItemRequest orderItem, OrderItem currentOrderItem) {
-        double totalAddonPriceForItem = 0.0;
-//        for (OrderAddonRequest addonRequest : orderItem.getOrderAddons()) {
-//            OrderAddon currentOrderAddon = currentOrderItem.getOrderAddons().stream()
-//                    .filter(addon -> Objects.equals(addon.getId(), addonRequest.getOrderAddonId()))
-//                    .findFirst().orElse(null);
-//
-//            log.info("Addon id : {}",  addonRequest.getOrderAddonId());
-//            Addon addOn = addonService.getAddOnById(addonRequest.getAddonId());
-//
-//            if (currentOrderAddon == null) {
-//                OrderAddon orderAddon = buildOrderAddon(addonRequest, addOn);
-//                totalAddonPriceForItem += orderAddon.getPrice();
-//                currentOrderItem.addOrderAddon(orderAddon);
-//            } else {
-//                currentOrderAddon.setQuantity(addonRequest.getQuantity());
-//                currentOrderAddon.setPrice(addonRequest.getQuantity() * addOn.getPrice());
-//                totalAddonPriceForItem += currentOrderAddon.getPrice();
-//            }
-//        }
-
-        currentOrderItem.setTotalAddonPrice(totalAddonPriceForItem);
-        currentOrderItem.setTotalPrice(totalAddonPriceForItem + currentOrderItem.getTotalItemPrice());
-    }
-
     private void processAddons(OrderItem orderItem, Set<Addon> addonSet, Set<OrderAddonRequest> addonRequests) {
         double totalAddonPrice = addonRequests
                 .stream()
@@ -301,14 +231,83 @@ public class OrderService {
         orderItem.setTotalPrice(totalAddonPrice + orderItem.getTotalItemPrice());
     }
 
-    private OrderAddon createOrderAddon(OrderAddonRequest addonRequest) {
-        Addon addOn = addonService.getAddOnById(addonRequest.addonId());
-        return buildOrderAddon(addonRequest, addOn);
+    public List<CustomerOrderSummary> getAllOrdersOfCustomer(Long customerId, OrderStatus orderStatus, Integer page, Integer size) {
+        Pageable pageable = getOrderPageable(page, size);
+        Page<Order> customerOrders = orderRepository.findAllByUserIdAndOrderStatus(customerId, orderStatus.getStatus(), pageable);
+        return customerOrders.stream().map(this::toCustomerOrderSummary).toList();
     }
 
-    private OrderAddon buildOrderAddon(OrderAddonRequest addonRequest, Addon addOn) {
-        return null;
+    private Pageable getOrderPageable(Integer page, Integer size) {
+        return PageRequest.of(page, size, Sort.by("orderTime").descending());
     }
+
+    private CustomerOrderSummary toCustomerOrderSummary(Order order) {
+        return new CustomerOrderSummary(
+                order.getId(),
+                order.getUserId(),
+                order.getOrderStatus(),
+                order.getTotalPrice(),
+                order.getOrderTime(),
+                toCustomerOrderItemSummary(order.getOrderItems())
+        );
+    }
+
+    private Set<CustomerOrderItemSummary> toCustomerOrderItemSummary(Set<OrderItem> orderItems) {
+        return orderItems.stream()
+                .map(orderItem -> new CustomerOrderItemSummary(
+                        orderItem.getId(),
+                        orderItem.getItemId(),
+                        orderItem.getQuantity(),
+                        toCustomerOrderAddonSummary(orderItem.getOrderAddons())
+                )).collect(Collectors.toSet());
+    }
+
+    private Set<CustomerOrderAddonSummary> toCustomerOrderAddonSummary(Set<OrderAddon> orderAddons) {
+        return orderAddons.stream()
+                .map(orderAddon -> new CustomerOrderAddonSummary(
+                        orderAddon.getId(),
+                        orderAddon.getAddonId(),
+                        orderAddon.getQuantity()
+                ))
+                .collect(Collectors.toSet());
+    }
+
+    private List<OrderItemSummary> getOrderItemSummeryList(Set<OrderItem> orderItems) {
+        return orderItems
+                .stream()
+                .map(orderItem -> OrderItemSummary
+                        .builder()
+                        .orderItemId(orderItem.getId())
+                        //  .itemId(orderItem.getItem().getId())
+                        //  .itemName(orderItem.getItem().getName())
+                        .quantity(orderItem.getQuantity())
+                        .orderAddonSummaryList(getOrderAddonSummeryList(orderItem.getOrderAddons()))
+                        .build())
+                .toList();
+    }
+
+    private List<OrderAddonSummary> getOrderAddonSummeryList(Set<OrderAddon> orderAddons) {
+        return orderAddons.stream().map(orderAddon -> OrderAddonSummary
+                .builder()
+                .orderAddonId(orderAddon.getId())
+                //   .addonId(orderAddon.getAddOn().getId())
+                //  .addonName(orderAddon.getAddOn().getName())
+                .quantity(orderAddon.getQuantity())
+                .build()).toList();
+    }
+
+    public List<OrderSummary> getAllOrdersSummary(Long page, Long size) {
+        List<Object> summaries = redisTemplate.opsForList().range(ConstantKeys.ORDERS_KEY, page * size, (page + 1) * size - 1);
+        if (summaries != null) {
+            return summaries
+                    .stream()
+                    .map(obj -> objectMapper.convertValue(obj, OrderSummary.class))
+                    .toList();
+        }
+
+        return Collections.emptyList();
+    }
+
 
     private OrderResponse mapToOrderResponse(Order order) {
         return OrderResponse.builder()
@@ -324,32 +323,6 @@ public class OrderService {
                 .deliveryTime(order.getDeliveryTime())
                 .orderItems(getOrderItemList(order.getOrderItems()))
                 .build();
-    }
-
-    private OrderItem findCurrentOrderItem(Order currentOrder, Long orderItemId) {
-        return currentOrder.getOrderItems()
-                .stream().filter(item -> Objects.equals(item.getId(), orderItemId))
-                .findFirst().orElse(null);
-    }
-
-
-    private void updateExistingOrderItem(OrderItem currentOrderItem, OrderItemRequest orderItem, Item item) {
-//        double currentItemTotalPrice = orderItem.getQuantity() * item.getPrice();
-//        currentOrderItem.setQuantity(orderItem.getQuantity());
-//        currentOrderItem.setTotalItemPrice(currentItemTotalPrice);
-//
-//        if (orderItem.getOrderAddons() != null) {
-//            removeAddonsFromOrderItem(currentOrderItem, orderItem.getOrderAddons());
-//            processUpdateAddons(orderItem, currentOrderItem);
-//        } else if (orderItem.getOrderAddons() == null && currentOrderItem.getOrderAddons() != null) {
-//            currentOrderItem.setTotalAddonPrice(0.0);
-//            currentOrderItem.setTotalPrice(currentItemTotalPrice);
-//            currentOrderItem.getOrderAddons().clear();
-//        }
-    }
-
-    private Item resolveItem(OrderItemRequest orderItemRequest, Item requestItem) {
-        return requestItem != null ? requestItem : itemService.getItemById(orderItemRequest.itemId());
     }
 
     private List<OrderItemResponse> getOrderItemList(Set<OrderItem> orderItemList) {
@@ -389,123 +362,14 @@ public class OrderService {
                 .build();
     }
 
-    private void removeItemsFromOrder(Order currentOrder, OrderRequest orderRequest) {
-        Set<Long> currentOrderItemIds = currentOrder.getOrderItems()
-                .stream().map(OrderItem::getId).collect(Collectors.toSet());
-
-        Set<Long> currentOrderRequestItemIds = orderRequest.orderItems()
-                .stream().map(OrderItemRequest::itemId)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
-
-        Set<Long> itemIdsNeedToDelete = new HashSet<>(currentOrderItemIds);
-        itemIdsNeedToDelete.removeAll(currentOrderRequestItemIds);
-
-        List<OrderItem> itemsNeedToDelete = new ArrayList<>();
-        for (Long id : itemIdsNeedToDelete) {
-            currentOrder.getOrderItems().stream()
-                    .filter(orderItem -> orderItem.getId().equals(id))
-                    .findFirst()
-                    .ifPresent(itemsNeedToDelete::add);
-        }
-
-        currentOrder.removeOrderItem(itemsNeedToDelete);
-    }
-
-    private void removeAddonsFromOrderItem(OrderItem currentOrderItem, Set<OrderAddonRequest> orderAddonRequest) {
-        Set<Long> currentOrderItemAddonIds = currentOrderItem.getOrderAddons()
-                .stream().map(OrderAddon::getId)
-                .collect(Collectors.toSet());
-
-        if (currentOrderItemAddonIds.isEmpty())
-            return;
-
-        Set<Long> currentOrderItemAddonRequestIds = orderAddonRequest.stream()
-                .map(OrderAddonRequest::addonId)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
-
-        Set<Long> addonIdsToDelete = new HashSet<>(currentOrderItemAddonIds);
-        addonIdsToDelete.removeAll(currentOrderItemAddonRequestIds);
-
-        List<OrderAddon> addonsNeedToDelete = new ArrayList<>();
-        for (Long id : addonIdsToDelete) {
-            currentOrderItem.getOrderAddons().stream()
-                    .filter(orderAddon -> orderAddon.getId().equals(id))
-                    .findFirst()
-                    .ifPresent(addonsNeedToDelete::add);
-        }
-
-        currentOrderItem.removeOrderAddon(addonsNeedToDelete);
-
+    private void removeItemsFromCurrentOrder(Order currentOrder) {
+        List<OrderItem> orderItemsToDelete = new ArrayList<>(currentOrder.getOrderItems());
+        currentOrder.removeOrderItem(orderItemsToDelete);
     }
 
     public List<OrderResponse> getAllOrdersByStatus(OrderStatus orderStatus, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("orderTime").descending());
         Page<Order> allOrders = orderRepository.findAllByOrderStatus(orderStatus.getStatus(), pageable);
         return allOrders.stream().map(this::mapToOrderResponse).collect(Collectors.toList());
-    }
-
-    private void cacheOrderDetails(Order order) {
-        OrderSummary orderSummary = getOrderSummary(order);
-
-        redisTemplate.opsForList().leftPush(ConstantKeys.ORDERS_KEY, orderSummary);
-    }
-
-    private OrderSummary getOrderSummary(Order order) {
-        return OrderSummary.builder()
-                .orderId(order.getId())
-                .userId(order.getUserId())
-                .totalPrice(order.getTotalPrice())
-                .orderStatus(order.getOrderStatus())
-                .orderTime(order.getOrderTime())
-                .orderItemSummaryList(getOrderItemSummeryList(order.getOrderItems()))
-                .build();
-    }
-
-    private List<OrderItemSummary> getOrderItemSummeryList(Set<OrderItem> orderItems) {
-        return orderItems
-                .stream()
-                .map(orderItem -> OrderItemSummary
-                        .builder()
-                        .orderItemId(orderItem.getId())
-                        //  .itemId(orderItem.getItem().getId())
-                        //  .itemName(orderItem.getItem().getName())
-                        .quantity(orderItem.getQuantity())
-                        .orderAddonSummaryList(getOrderAddonSummeryList(orderItem.getOrderAddons()))
-                        .build())
-                .toList();
-    }
-
-    private List<OrderAddonSummary> getOrderAddonSummeryList(Set<OrderAddon> orderAddons) {
-        return orderAddons.stream().map(orderAddon -> OrderAddonSummary
-                .builder()
-                .orderAddonId(orderAddon.getId())
-                //   .addonId(orderAddon.getAddOn().getId())
-                //  .addonName(orderAddon.getAddOn().getName())
-                .quantity(orderAddon.getQuantity())
-                .build()).toList();
-    }
-
-    public List<OrderSummary> getAllOrdersSummary(Long page, Long size) {
-        List<Object> summaries = redisTemplate.opsForList().range(ConstantKeys.ORDERS_KEY, page * size, (page + 1) * size - 1);
-        if (summaries != null) {
-            return summaries
-                    .stream()
-                    .map(obj -> objectMapper.convertValue(obj, OrderSummary.class))
-                    .toList();
-        }
-
-        return Collections.emptyList();
-    }
-
-    public List<OrderSummary> getAllOrdersOfCustomer(Long customerId, OrderStatus orderStatus, Integer page, Integer size) {
-        Pageable pageable = getOrderPageable(page, size);
-        Page<Order> customerOrders = orderRepository.findAllByUserIdAndOrderStatus(customerId, orderStatus.getStatus(), pageable);
-        return customerOrders.stream().map(this::getOrderSummary).toList();
-    }
-
-    private Pageable getOrderPageable(Integer page, Integer size) {
-        return PageRequest.of(page, size, Sort.by("orderTime").descending());
     }
 }

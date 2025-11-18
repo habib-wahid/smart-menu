@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
@@ -17,7 +16,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("select distinct o from customer_order o " +
     "join fetch o.orderItems oi " +
     "where o.id = :orderId ")
-    Optional<Order> findOrderWithDetailsById(@Param("orderId") Long orderId);
+    Optional<Order> findOrderWitOrderItemsById(@Param("orderId") Long orderId);
 
     @EntityGraph(attributePaths = {
             "orderItems", "orderItems.item",
@@ -27,11 +26,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
 
     @EntityGraph(attributePaths = {
-            "orderItems", "orderItems.item",
-            "orderItems.orderAddons",
-            "orderItems.orderAddons.addOn"
-    })
-    Page<Order> findAllByUserIdAndOrderStatus(Long customerId,String orderStatus, Pageable pageable);
+            "orderItems",
+            "orderItems.orderAddons"})
+    Page<Order> findAllByUserIdAndOrderStatus(Long customerId, String orderStatus, Pageable pageable);
 
     @Modifying
     @Query(value = "UPDATE customer_order SET order_status =:status WHERE id = :orderId", nativeQuery = true)
