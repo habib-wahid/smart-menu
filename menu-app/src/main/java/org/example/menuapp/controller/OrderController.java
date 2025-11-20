@@ -22,6 +22,7 @@ import java.util.List;
 @RestController
 public class OrderController {
 
+    //todo: fetch order details by order id, RBAC(stuff should only be able to update order status, customer profile management, real time admin dashboard, payment processing)
     private final OrderService orderService;
   //  private final SimpMessagingTemplate messagingTemplate;
     private final OrderReportService orderReportService;
@@ -41,6 +42,15 @@ public class OrderController {
         return ApiResponse.success("Order Fetched Successfully", orderSummaries);
     }
 
+    @GetMapping("/all-orders-summary")
+    public ResponseEntity<List<OrderSummary>> getAllOrders(
+            @RequestParam(value = "0") Long page,
+            @RequestParam(value = "50") Long size
+    ) {
+        List<OrderSummary> orderSummaries = orderService.getAllOrdersSummary(page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(orderSummaries);
+    }
+
     //todo need two apis. 1. Get all orders of a customer based on placed, processing, finish. 2. Get order details of a customer order
 
 
@@ -52,15 +62,6 @@ public class OrderController {
     ) {
         List<OrderResponse> allOrders = orderService.getAllOrdersByStatus(orderStatus, page, size);
         return ResponseEntity.status(HttpStatus.OK).body(allOrders);
-    }
-
-    @GetMapping("/all-orders-summary")
-    public ResponseEntity<List<OrderSummary>> getAllOrders(
-            @RequestParam(value = "0") Long page,
-            @RequestParam(value = "50") Long size
-    ) {
-       List<OrderSummary> orderSummaries = orderService.getAllOrdersSummary(page, size);
-       return ResponseEntity.status(HttpStatus.OK).body(orderSummaries);
     }
 
 

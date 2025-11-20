@@ -14,7 +14,7 @@ public interface ItemMapper {
     @Mapping(target = "rating", ignore = true)
     @Mapping(target = "filePath", source = "filePath")
     @Mapping(target = "fileName", source = "fileName")
-    Item toItem(ItemRequest itemRequest,String fileName, String filePath);
+    Item toItem(ItemRequest itemRequest, String fileName, String filePath);
 
 
     ItemResponse toItemResponse(Item item);

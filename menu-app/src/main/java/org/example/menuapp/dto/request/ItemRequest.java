@@ -13,6 +13,8 @@ public record ItemRequest(
 
         @NotNull(message = "Every item should have a price") double price,
 
+       @NotNull(message = "") Long createdBy,
+
         @NotNull(message = "Category can not be null")
         @NotEmpty(message = "Every item must have at least one category")
         Set<Long> categoryIds

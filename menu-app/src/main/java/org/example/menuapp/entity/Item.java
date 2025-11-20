@@ -9,15 +9,21 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.SequenceGenerator;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Getter @Setter
+@SQLDelete(sql = "UPDATE item SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted=false")
 public class Item {
 
     @Id
@@ -33,6 +39,12 @@ public class Item {
 
     @Column(name = "item_price", nullable = false)
     private Double price;
+
+    @Column(name = "is_available", nullable = false)
+    private boolean isAvailable = true;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
 
     @Column(name = "file_path")
     private String filePath;
@@ -51,4 +63,21 @@ public class Item {
     )
     private Set<Category> category = new HashSet<>();
 
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "created_by")
+    private Long createdBy;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @Column(name = "updated_by")
+    private Long updatedBy;
+
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
 }

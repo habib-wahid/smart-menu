@@ -2,6 +2,7 @@ package org.example.menuapp.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.menuapp.config.FileStorageConfig;
+import org.example.menuapp.dto.request.ItemPriceUpdateRequest;
 import org.example.menuapp.dto.request.ItemRequest;
 import org.example.menuapp.dto.response.ItemResponse;
 import org.example.menuapp.entity.Category;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -68,6 +70,22 @@ public class ItemService {
         String fileName = file != null ? file.getOriginalFilename() : null;
         Item item = itemMapper.toItem(request, fileName, filePath);
         item.setCategory(categories);
+        itemRepository.save(item);
+    }
+
+    @Transactional
+    public void updateItemPrice(Long itemId, ItemPriceUpdateRequest priceUpdateRequest) {
+        Item item = getItemById(itemId);
+        item.setPrice(priceUpdateRequest.price());
+        item.setUpdatedAt(LocalDateTime.now());
+        itemRepository.save(item);
+    }
+
+    @Transactional
+    public void updateItemAvailability(Long itemId, boolean availability) {
+        Item item = getItemById(itemId);
+        item.setAvailable(availability);
+        item.setUpdatedAt(LocalDateTime.now());
         itemRepository.save(item);
     }
 
