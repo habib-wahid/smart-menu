@@ -3,6 +3,7 @@ package org.example.menuapp.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,8 +36,8 @@ public class Order {
     @SequenceGenerator(name = "order_seq", sequenceName = "order_sequence", allocationSize = 1)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @Column(name = "customer_id", nullable = false)
+    private Long customerId;
 
     @Column(name = "order_status", nullable = false)
     private String orderStatus;
@@ -71,7 +72,7 @@ public class Order {
     @Column(name = "order_delivery_time")
     private LocalDateTime deliveryTime;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<OrderItem> orderItems = new HashSet<>();
 
 

@@ -9,4 +9,6 @@
     <include file="db/changelog/changes/01-create-initial-schema.xml"/>
     <include file="db/changelog/changes/02-add-deleted-column-in-order.xml" />
     <include file="db/changelog/changes/03-add-additional-fields-in-item.xml" />
+    <include file="db/changelog/changes/04-create-customer-table.xml" />
+    <include file="db/changelog/changes/05-rename-user-to-customer.xml" />
 </databaseChangeLog>

@@ -2,9 +2,7 @@ package org.example.menuapp.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.example.menuapp.config.ConstantKeys;
-import org.example.menuapp.dto.redis.OrderAddonSummary;
-import org.example.menuapp.dto.redis.OrderItemSummary;
+import org.example.menuapp.config.AppConstants;
 import org.example.menuapp.dto.redis.OrderSummary;
 import org.example.menuapp.dto.request.OrderAddonRequest;
 import org.example.menuapp.dto.request.OrderItemRequest;
@@ -40,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -130,7 +129,7 @@ public class OrderService {
 
     private Order getOrder(OrderRequest orderRequest) {
         Order order = new Order();
-        order.setUserId(orderRequest.userId());
+        order.setCustomerId(orderRequest.customerId());
         order.setOrderStatus(OrderStatus.PLACED.getStatus());
         order.setIsServed(false);
         order.setIsPaid(false);
@@ -231,9 +230,14 @@ public class OrderService {
         orderItem.setTotalPrice(totalAddonPrice + orderItem.getTotalItemPrice());
     }
 
+    public CustomerOrderSummary getOrderDetails(Long customerId, Long orderId) {
+        Optional<Order> order = orderRepository.findByCustomerIdAndId(customerId, orderId);
+        return order.map(this::toCustomerOrderSummary).orElse(null);
+    }
+
     public List<CustomerOrderSummary> getAllOrdersOfCustomer(Long customerId, OrderStatus orderStatus, Integer page, Integer size) {
         Pageable pageable = getOrderPageable(page, size);
-        Page<Order> customerOrders = orderRepository.findAllByUserIdAndOrderStatus(customerId, orderStatus.getStatus(), pageable);
+        Page<Order> customerOrders = orderRepository.findAllByCustomerIdAndOrderStatus(customerId, orderStatus.getStatus(), pageable);
         return customerOrders.stream().map(this::toCustomerOrderSummary).toList();
     }
 
@@ -244,7 +248,7 @@ public class OrderService {
     private CustomerOrderSummary toCustomerOrderSummary(Order order) {
         return new CustomerOrderSummary(
                 order.getId(),
-                order.getUserId(),
+                order.getCustomerId(),
                 order.getOrderStatus(),
                 order.getTotalPrice(),
                 order.getOrderTime(),
@@ -272,32 +276,8 @@ public class OrderService {
                 .collect(Collectors.toSet());
     }
 
-    private List<OrderItemSummary> getOrderItemSummeryList(Set<OrderItem> orderItems) {
-        return orderItems
-                .stream()
-                .map(orderItem -> OrderItemSummary
-                        .builder()
-                        .orderItemId(orderItem.getId())
-                        //  .itemId(orderItem.getItem().getId())
-                        //  .itemName(orderItem.getItem().getName())
-                        .quantity(orderItem.getQuantity())
-                        .orderAddonSummaryList(getOrderAddonSummeryList(orderItem.getOrderAddons()))
-                        .build())
-                .toList();
-    }
-
-    private List<OrderAddonSummary> getOrderAddonSummeryList(Set<OrderAddon> orderAddons) {
-        return orderAddons.stream().map(orderAddon -> OrderAddonSummary
-                .builder()
-                .orderAddonId(orderAddon.getId())
-                //   .addonId(orderAddon.getAddOn().getId())
-                //  .addonName(orderAddon.getAddOn().getName())
-                .quantity(orderAddon.getQuantity())
-                .build()).toList();
-    }
-
     public List<OrderSummary> getAllOrdersSummary(Long page, Long size) {
-        List<Object> summaries = redisTemplate.opsForList().range(ConstantKeys.ORDERS_KEY, page * size, (page + 1) * size - 1);
+        List<Object> summaries = redisTemplate.opsForList().range(AppConstants.ORDERS_KEY, page * size, (page + 1) * size - 1);
         if (summaries != null) {
             return summaries
                     .stream()
@@ -312,7 +292,7 @@ public class OrderService {
     private OrderResponse mapToOrderResponse(Order order) {
         return OrderResponse.builder()
                 .orderId(order.getId())
-                .userId(order.getUserId())
+                .userId(order.getCustomerId())
                 .orderStatus(order.getOrderStatus())
                 .totalPrice(order.getTotalPrice())
                 .isPaid(order.getIsPaid())

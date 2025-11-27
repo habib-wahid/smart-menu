@@ -28,7 +28,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @EntityGraph(attributePaths = {
             "orderItems",
             "orderItems.orderAddons"})
-    Page<Order> findAllByUserIdAndOrderStatus(Long customerId, String orderStatus, Pageable pageable);
+    Page<Order> findAllByCustomerIdAndOrderStatus(Long customerId, String orderStatus, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"orderItems", "orderItems.orderAddons"})
+    Optional<Order> findByCustomerIdAndId(Long customerId, Long orderId);
 
     @Modifying
     @Query(value = "UPDATE customer_order SET order_status =:status WHERE id = :orderId", nativeQuery = true)

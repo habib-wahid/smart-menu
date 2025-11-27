@@ -10,7 +10,7 @@ import java.util.Set;
 public record OrderRequest(
 
         @NotNull(message = "Must provide user id")
-        Long userId,
+        Long customerId,
         @NotNull(message = "Must provide table number")
         @Positive
         Integer tableNumber,

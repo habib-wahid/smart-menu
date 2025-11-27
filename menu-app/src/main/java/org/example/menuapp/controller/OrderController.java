@@ -22,14 +22,23 @@ import java.util.List;
 @RestController
 public class OrderController {
 
-    //todo: fetch order details by order id, RBAC(stuff should only be able to update order status, customer profile management, real time admin dashboard, payment processing)
+    //todo: RBAC(stuff should only be able to update order status, customer profile management, real time admin dashboard, payment processing)
     private final OrderService orderService;
-  //  private final SimpMessagingTemplate messagingTemplate;
+    //  private final SimpMessagingTemplate messagingTemplate;
     private final OrderReportService orderReportService;
 
     public OrderController(OrderService orderService, OrderReportService orderReportService) {
         this.orderService = orderService;
         this.orderReportService = orderReportService;
+    }
+
+
+    @GetMapping("/customers/{customerId}/orders/{orderId}")
+    public ApiResponse<CustomerOrderSummary> getCustomerOrderDetails(
+            @PathVariable Long customerId,
+            @PathVariable Long orderId) {
+        CustomerOrderSummary orderSummary = orderService.getOrderDetails(customerId, orderId);
+        return ApiResponse.success("Order fetched Successfully", orderSummary);
     }
 
     @GetMapping("/customers/{customerId}/orders")
