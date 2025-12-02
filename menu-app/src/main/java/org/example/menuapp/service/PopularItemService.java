@@ -11,6 +11,7 @@ import java.util.List;
 @Service
 public class PopularItemService {
 
+    //todo : Discount and Promotion logic, Popular Item logic
     private final ItemRepository itemRepository;
 
     public PopularItemService(ItemRepository itemRepository) {

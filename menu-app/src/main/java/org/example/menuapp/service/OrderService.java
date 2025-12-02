@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.example.menuapp.config.AppConstants;
 import org.example.menuapp.dto.redis.OrderSummary;
+import org.example.menuapp.dto.request.CustomerCreateRequest;
 import org.example.menuapp.dto.request.OrderAddonRequest;
 import org.example.menuapp.dto.request.OrderItemRequest;
 import org.example.menuapp.dto.request.OrderRequest;
@@ -15,6 +16,7 @@ import org.example.menuapp.dto.response.OrderAddonResponse;
 import org.example.menuapp.dto.response.OrderItemResponse;
 import org.example.menuapp.dto.response.OrderResponse;
 import org.example.menuapp.entity.Addon;
+import org.example.menuapp.entity.Customer;
 import org.example.menuapp.entity.Item;
 import org.example.menuapp.entity.Order;
 import org.example.menuapp.entity.OrderAddon;
@@ -51,20 +53,35 @@ public class OrderService {
     private final ItemService itemService;
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
+    private final CustomerService customerService;
 
-    public OrderService(OrderRepository orderRepository, AddonService addonService, ItemService itemService, RedisTemplate<String, Object> redisTemplate, ObjectMapper objectMapper) {
+    public OrderService(OrderRepository orderRepository,
+                        AddonService addonService,
+                        ItemService itemService,
+                        RedisTemplate<String, Object> redisTemplate,
+                        ObjectMapper objectMapper,
+                        CustomerService customerService) {
         this.orderRepository = orderRepository;
         this.addonService = addonService;
         this.itemService = itemService;
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
+        this.customerService = customerService;
     }
 
     @Transactional
     public void placeOrder(OrderRequest orderRequest) {
+        Customer customer = customerService.getCustomerByPhone(orderRequest.phone())
+                .orElseGet(() -> {
+                    log.info("Creating new customer with phone: {}", orderRequest.phone());
+                    return customerService.saveCustomer(
+                            new CustomerCreateRequest("Guest", "Guest", orderRequest.phone())
+                    );
+                });
+
         Set<Item> itemSet = fetchAndValidateItems(orderRequest);
         Set<Addon> addonSet = fetchAndValidateAddons(orderRequest);
-        Order order = getOrder(orderRequest);
+        Order order = getOrder(orderRequest, customer.getId());
         Set<OrderItem> orderItems = orderRequest.orderItems().stream()
                 .map(orderItemRequest -> createOrderItem(orderItemRequest, itemSet, addonSet))
                 .collect(Collectors.toSet());
@@ -127,9 +144,9 @@ public class OrderService {
                         String.format(ExceptionMessages.RESOURCE_NOT_FOUND, "Order", orderId)));
     }
 
-    private Order getOrder(OrderRequest orderRequest) {
+    private Order getOrder(OrderRequest orderRequest, Long customerId) {
         Order order = new Order();
-        order.setCustomerId(orderRequest.customerId());
+        order.setCustomerId(customerId);
         order.setOrderStatus(OrderStatus.PLACED.getStatus());
         order.setIsServed(false);
         order.setIsPaid(false);

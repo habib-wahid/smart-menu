@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/addon")
 @RequiredArgsConstructor
-public class AddOnController {
+public class AddonController {
 
     private final AddonService addonService;
 

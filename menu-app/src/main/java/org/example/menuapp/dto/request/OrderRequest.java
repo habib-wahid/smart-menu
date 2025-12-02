@@ -3,14 +3,16 @@ package org.example.menuapp.dto.request;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 
 import java.util.Set;
 
 public record OrderRequest(
 
-        @NotNull(message = "Must provide user id")
-        Long customerId,
+        @Pattern(regexp = "^[0-9]{10,11}$", message = "Phone number must be 10-12 digits")
+        String phone,
+
         @NotNull(message = "Must provide table number")
         @Positive
         Integer tableNumber,

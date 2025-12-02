@@ -11,6 +11,8 @@ import java.util.List;
 @RestController
 public class PopularItemController {
 
+    //todo : {discount service, promotion service, popular item service}
+
     private final PopularItemService popularItemService;
 
     public PopularItemController(PopularItemService popularItemService) {

@@ -4,9 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.example.menuapp.config.AppConstants;
 import org.example.menuapp.dto.request.CustomerCreateRequest;
 import org.example.menuapp.entity.Customer;
+import org.example.menuapp.error.custom_exceptions.SmResourceNotFoundException;
+import org.example.menuapp.error.messages.ExceptionMessages;
 import org.example.menuapp.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -15,9 +19,14 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
 
+    public Customer getCustomerById(Long id) {
+        return customerRepository.findById(id)
+                .orElseThrow(() -> new SmResourceNotFoundException(String.format(ExceptionMessages.RESOURCE_NOT_FOUND, "Customer", id)));
+    }
+
     @Transactional
     public Customer saveCustomer(CustomerCreateRequest customerCreateRequest) {
-        return customerRepository.findByPhone(customerCreateRequest.phone())
+        return getCustomerByPhone(customerCreateRequest.phone())
                 .orElseGet(() -> {
                     Customer customer = new Customer();
                     customer.setUsername(generateUsername(customerCreateRequest.phone()));
@@ -26,6 +35,10 @@ public class CustomerService {
                     customer.setLastName(customerCreateRequest.lastName());
                     return customerRepository.save(customer);
                 });
+    }
+
+    public Optional<Customer> getCustomerByPhone(String phone) {
+        return customerRepository.findByPhone(phone);
     }
 
     private String generateUsername(String phoneNumber) {
