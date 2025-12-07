@@ -29,7 +29,7 @@ import java.util.Set;
 @SQLRestriction("is_deleted=false")
 @Getter @Setter
 @NoArgsConstructor
-public class Order {
+public class  Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_seq")

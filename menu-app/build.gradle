@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.3'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'jacoco'
 }
 
 group = 'org.example'
@@ -12,6 +13,12 @@ java {
         languageVersion = JavaLanguageVersion.of(21)
     }
 }
+
+jacoco {
+    toolVersion = "0.8.14" // Use a compatible version
+}
+
+
 
 configurations {
     compileOnly {
@@ -60,4 +67,16 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    finalizedBy 'jacocoTestReport'
+}
+
+ //Configure JaCoCo test report
+jacocoTestReport {
+    dependsOn test
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+      //  csv.setRequired(true)
+    }
 }

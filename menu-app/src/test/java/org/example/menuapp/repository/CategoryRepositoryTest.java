@@ -29,16 +29,43 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    @DisplayName("Should count categories By Ids")
-    void testCountCategories() {
+    @DisplayName("Should count categories By Ids - all categories")
+    void testCountCategoriesWithAllIds() {
         Category savedCategory1 = categoryRepository.save(category1);
         Category savedCategory2 = categoryRepository.save(category2);
 
         Set<Long> ids = Set.of(savedCategory1.getId(), savedCategory2.getId());
 
         long count = categoryRepository.countCategories(ids);
+        assertEquals(2, count);
+    }
 
+    @Test
+    @DisplayName("Should count categories By Ids - some categories")
+    void testCountCategoriesWithSomeIds() {
+        Category savedCategory1 = categoryRepository.save(category1);
+        Set<Long> ids = Set.of(savedCategory1.getId(), 100L);
+
+        long count = categoryRepository.countCategories(ids);
         assertEquals(1, count);
+    }
+
+    @Test
+    @DisplayName("Should count categories By Ids - non existing categories")
+    void testCountCategoriesWithNonExistingIds() {
+        categoryRepository.save(category1);
+        categoryRepository.save(category2);
+
+        Set<Long> ids = Set.of(100L, 200L);
+        long count = categoryRepository.countCategories(ids);
+        assertEquals(0, count);
+    }
+
+    @Test
+    @DisplayName("Should count categories By Ids - empty categories")
+    void testCountCategoriesWithEmptyIds() {
+        long count = categoryRepository.countCategories(Set.of());
+        assertEquals(0, count);
     }
 
 
