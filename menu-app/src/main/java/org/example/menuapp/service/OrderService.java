@@ -3,6 +3,8 @@ package org.example.menuapp.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.example.menuapp.config.AppConstants;
+import org.example.menuapp.discount.application.dto.ApplyDiscountResponse;
+import org.example.menuapp.discount.application.service.ApplyDiscountService;
 import org.example.menuapp.dto.redis.OrderSummary;
 import org.example.menuapp.dto.request.CustomerCreateRequest;
 import org.example.menuapp.dto.request.OrderAddonRequest;
@@ -35,6 +37,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,13 +57,16 @@ public class OrderService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
     private final CustomerService customerService;
+    private final ApplyDiscountService applyDiscountService;
 
     public OrderService(OrderRepository orderRepository,
                         AddonService addonService,
                         ItemService itemService,
                         RedisTemplate<String, Object> redisTemplate,
                         ObjectMapper objectMapper,
-                        CustomerService customerService) {
+                        CustomerService customerService,
+                        ApplyDiscountService applyDiscountService) {
+        this.applyDiscountService = applyDiscountService;
         this.orderRepository = orderRepository;
         this.addonService = addonService;
         this.itemService = itemService;
@@ -88,9 +94,10 @@ public class OrderService {
 
         orderItems.forEach(order::addOrderItem);
         calculateAndSetTotals(order, orderItems);
-        orderRepository.save(order);
-    }
+        Order placedOrder = orderRepository.save(order);
 
+        applyDiscountOnOrder(placedOrder, orderRequest, customer);
+    }
 
     @Transactional
     public void updateOrder(Long orderId, OrderRequest orderRequest) {
@@ -245,6 +252,32 @@ public class OrderService {
 
         orderItem.setTotalAddonPrice(totalAddonPrice);
         orderItem.setTotalPrice(totalAddonPrice + orderItem.getTotalItemPrice());
+    }
+
+    private void applyDiscountOnOrder(Order placedOrder, OrderRequest orderRequest, Customer customer) {
+        if (orderRequest.discountCode() != null) {
+            try {
+                ApplyDiscountResponse discountResponse = applyDiscountService.applyDiscount(
+                        new org.example.menuapp.discount.application.dto.ApplyDiscountRequest(
+                                placedOrder.getId(),
+                                orderRequest.discountCode(),
+                                customer.getId(),
+                                placedOrder.getTotalPrice(),
+                                placedOrder.getTotalItemPrice(),
+                                placedOrder.getTotalAddonPrice(),
+                                Set.of("ITEM"))
+                );
+                BigDecimal discountAmount = discountResponse.discountedAmount();
+
+                placedOrder.setDiscountedPrice(placedOrder.getTotalPrice() - discountAmount.doubleValue());
+                placedOrder.setDiscountAmount(discountAmount.doubleValue());
+                orderRepository.save(placedOrder);
+
+                log.info("Applied discount of amount {} to order {}", discountAmount, placedOrder.getId());
+            } catch (Exception e) {
+                log.error("Failed to apply discount to order {}: {}", placedOrder.getId(), e.getMessage());
+            }
+        }
     }
 
     public CustomerOrderSummary getOrderDetails(Long customerId, Long orderId) {

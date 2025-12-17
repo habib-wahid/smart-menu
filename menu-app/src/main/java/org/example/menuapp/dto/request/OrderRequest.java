@@ -17,6 +17,8 @@ public record OrderRequest(
         @Positive
         Integer tableNumber,
 
+        String discountCode,
+
         @Valid
         @NotNull(message = "Order must contain items")
         @NotEmpty(message = "Order must contain at least one item")

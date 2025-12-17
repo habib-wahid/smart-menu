@@ -56,16 +56,8 @@ spring:
 file:
   location: ./uploads/files
 
-restate:
-  sdk:
-    http:
-      port: 9080
-
-  client:
-    base-url: http://localhost:8080/
-
 server:
-  port: 8081
+  port: 8080
   servlet:
     context-path: /api
 

@@ -1,15 +1,15 @@
 package org.example.menuapp.discount.domain.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.example.menuapp.discount.domain.snapshot.DiscountableOrderSnapshot;
 
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class DiscountConditionDomain {
     private Long id;
     private ConditionType conditionType;

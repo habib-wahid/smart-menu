@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="19" author="habib">
+        <comment>Create discount_sequence</comment>
+        <createSequence sequenceName="discount_sequence" startValue="1" incrementBy="1"/>
+    </changeSet>
+
+    <changeSet id="20" author="habib">
+        <comment>Create discount_condition_sequence</comment>
+        <createSequence sequenceName="discount_condition_sequence" startValue="1" incrementBy="1"/>
+    </changeSet>
+
+
+    <changeSet id="21" author="habib">
+        <comment>Create discount table</comment>
+        <createTable tableName="discount">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="code" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="VARCHAR(500)"/>
+            <column name="strategy" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fixed_amount" type="NUMERIC(19,2)"/>
+            <column name="percentage" type="NUMERIC(5,2)"/>
+            <column name="start_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_date" type="TIMESTAMP"/>
+            <column name="max_usage_count" type="INT"/>
+            <column name="current_usage_count" type="INT" defaultValue="0"/>
+            <column name="min_order_amount" type="NUMERIC(19,2)"/>
+            <column name="max_discount_amount" type="NUMERIC(19,2)"/>
+            <column name="is_active" type="BOOLEAN" defaultValue="true"/>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP"/>
+            <column name="version" type="BIGINT" defaultValue="0"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="22" author="habib">
+        <comment>Create discount_condition table</comment>
+        <createTable tableName="discount_condition">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="discount_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="condition_type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="condition_value" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="23" author="habib">
+        <comment>Add foreign key constraint for discount_condition</comment>
+        <addForeignKeyConstraint
+                constraintName="fk_discount_condition_discount"
+                baseTableName="discount_condition"
+                baseColumnNames="discount_id"
+                referencedTableName="discount"
+                referencedColumnNames="id"
+                onDelete="CASCADE"
+                onUpdate="RESTRICT"/>
+    </changeSet>
+
+    <changeSet id="24" author="habib">
+        <comment>Add discount columns to customer_order table</comment>
+        <addColumn tableName="customer_order">
+            <column name="discounted_price" type="double"/>
+            <column name="discount_amount" type="double"/>
+        </addColumn>
+    </changeSet>
+
+
+</databaseChangeLog>

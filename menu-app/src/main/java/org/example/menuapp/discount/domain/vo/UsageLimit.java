@@ -4,11 +4,10 @@ public record UsageLimit(
         Integer maxCount
 ) {
 
-    public UsageLimit(Integer maxCount) {
-        if (maxCount ==  null || maxCount <= 0) {
+    public UsageLimit {
+        if (maxCount == null || maxCount <= 0) {
             throw new IllegalArgumentException("Usage limit must be greater than zero");
         }
-        this.maxCount = maxCount;
     }
 
     public boolean isExceeded(Integer currentCount) {

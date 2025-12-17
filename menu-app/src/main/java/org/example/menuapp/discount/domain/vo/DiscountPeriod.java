@@ -6,10 +6,7 @@ public record DiscountPeriod(
         LocalDateTime startDate,
         LocalDateTime endDate
 ) {
-    public DiscountPeriod(
-            LocalDateTime startDate,
-            LocalDateTime endDate
-    ) {
+    public DiscountPeriod {
         if (startDate == null) {
             throw new IllegalArgumentException("Start date and end date are required");
         }
@@ -17,8 +14,6 @@ public record DiscountPeriod(
             throw new IllegalArgumentException("End date must be after start date");
         }
 
-        this.startDate = startDate;
-        this.endDate = endDate;
     }
 
     public boolean isActive(LocalDateTime now) {

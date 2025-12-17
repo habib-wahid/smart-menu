@@ -51,6 +51,12 @@ public class  Order {
     @Column(name = "total_addon_price")
     private Double totalAddonPrice;
 
+    @Column(name = "discounted_price")
+    private Double discountedPrice;
+
+    @Column(name = "discount_amount")
+    private Double discountAmount;
+
     @Column(name = "paid")
     private Boolean isPaid;
 

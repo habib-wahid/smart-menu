@@ -37,7 +37,7 @@ public class Discount {
     @SequenceGenerator(name = "discount_seq", sequenceName = "discount_sequence", allocationSize = 1)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "code", unique = true, nullable = false)
     private String code;
 
     @Column(name = "description")
@@ -47,10 +47,10 @@ public class Discount {
     @Column(name = "strategy")
     private DiscountAggregate.DiscountStrategy strategy;
 
-    @Column(name = "strategy_value")
+    @Column(name = "fixed_amount")
     private BigDecimal fixedAmount;
 
-    @Column(name = "strategy_percentage")
+    @Column(name = "percentage")
     private BigDecimal percentage;
 
     @Column(name = "start_date", nullable = false)

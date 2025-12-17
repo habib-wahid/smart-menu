@@ -1,9 +1,9 @@
 package org.example.menuapp.discount.domain.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.example.menuapp.discount.domain.AggregateRoot;
 import org.example.menuapp.discount.domain.exception.DiscountConditionNotMatchException;
 import org.example.menuapp.discount.domain.exception.DiscountExpiredException;
@@ -16,6 +16,7 @@ import org.example.menuapp.discount.domain.vo.DiscountAmount;
 import org.example.menuapp.discount.domain.vo.DiscountCode;
 import org.example.menuapp.discount.domain.vo.DiscountPercentage;
 import org.example.menuapp.discount.domain.vo.DiscountPeriod;
+import org.example.menuapp.discount.domain.vo.OrderAmount;
 import org.example.menuapp.discount.domain.vo.UsageLimit;
 
 import java.math.BigDecimal;
@@ -24,20 +25,22 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class DiscountAggregate implements AggregateRoot {
+
+    //todo: multiple aggregate with aggregate root, service domain
     private Long id;
-    private DiscountCode discountCode;
     private String description;
+    private DiscountCode discountCode;
     private DiscountStrategy discountStrategy;
     private DiscountPercentage discountPercentage;
     private DiscountAmount discountAmount;
     private DiscountPeriod discountPeriod;
     private UsageLimit usageLimit;
     private Integer currentUsageCount = 0;
-    private DiscountAmount minimumDiscountAmount;
+    private OrderAmount minimumOrderAmount;
     private DiscountAmount maximumDiscountAmount;
     private Boolean active = true;
     private LocalDateTime createdAt;
@@ -53,30 +56,40 @@ public class DiscountAggregate implements AggregateRoot {
         validateConditions(order);
     }
 
+    /**
+     * Pure query method - calculates discount amount without mutating state
+     * Does not modify this.discountAmount
+     */
     public DiscountAmount calculateDiscountAmount(DiscountableOrderSnapshot order) {
         BigDecimal totalPrice = new BigDecimal(order.totalPrice().toString());
-        BigDecimal discountValue;
 
-        switch (discountStrategy) {
-            case PERCENTAGE:
-                discountValue = discountPercentage.applyToAmount(new DiscountAmount(totalPrice)).getAmount();
-                break;
-            case FIXED_AMOUNT:
-                discountValue = new BigDecimal(discountAmount.getAmount().toString());
-                break;
-            case BUY_ONE_GET_ONE_FREE:
+        BigDecimal discountValue = switch (discountStrategy) {
+            case PERCENTAGE -> discountPercentage.applyToAmount(new DiscountAmount(totalPrice)).getAmount();
+            case FIXED_AMOUNT -> new BigDecimal(discountAmount.getAmount().toString());
+            case BUY_ONE_GET_ONE_FREE ->
                 // Implement BOGO logic as needed
-                discountValue = BigDecimal.ZERO; // Placeholder
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown discount strategy");
-        }
+                    BigDecimal.ZERO; // Placeholder
+            default -> throw new IllegalArgumentException("Unknown discount strategy");
+        };
 
         if (maximumDiscountAmount != null && discountValue.compareTo(maximumDiscountAmount.getAmount()) > 0) {
             discountValue = maximumDiscountAmount.getAmount();
         }
 
         return new DiscountAmount(discountValue);
+    }
+
+    /**
+     * Command method - explicitly sets the calculated discount amount
+     * Use this after calculateDiscountAmount() to persist the value in the aggregate
+     */
+    public void applyCalculatedDiscount(DiscountAmount calculatedDiscount) {
+        this.discountAmount = calculatedDiscount;
+    }
+
+
+    public void incrementUsageCount() {
+        this.currentUsageCount += 1;
     }
 
     private void validateConditions(DiscountableOrderSnapshot order) {
@@ -93,7 +106,7 @@ public class DiscountAggregate implements AggregateRoot {
     private void validateMinimumOrderAmount(DiscountableOrderSnapshot order) {
         BigDecimal totalPrice = new BigDecimal(order.totalPrice().toString());
         
-        if (minimumDiscountAmount != null && totalPrice.compareTo(minimumDiscountAmount.getAmount()) < 0) {
+        if (minimumOrderAmount != null && totalPrice.compareTo(minimumOrderAmount.getAmount()) < 0) {
             throw new MinimumOrderAmountNotMetException(DomainExceptionMessages.DISCOUNT_MINIMUM_AMOUNT_NOT_MET);
         }
     }
@@ -115,6 +128,46 @@ public class DiscountAggregate implements AggregateRoot {
             throw new DiscountNotActiveException(DomainExceptionMessages.DISCOUNT_NOT_ACTIVE);
         }
     }
+
+    public void deactivate() {
+        this.active = false;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void activate() {
+        this.active = true;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+
+    public static DiscountAggregate create(String description,
+                                           DiscountCode discountCode,
+                                           DiscountStrategy discountStrategy,
+                                           DiscountPercentage discountPercentage,
+                                           DiscountAmount discountAmount,
+                                           DiscountPeriod discountPeriod,
+                                           UsageLimit usageLimit,
+                                           OrderAmount minimumOrderAmount,
+                                           DiscountAmount maximumDiscountAmount,
+                                           Boolean active,
+                                           Set<DiscountConditionDomain> conditions) {
+
+        return DiscountAggregate.builder()
+                .description(description)
+                .discountCode(discountCode)
+                .discountStrategy(discountStrategy)
+                .discountPercentage(discountPercentage)
+                .discountAmount(discountAmount)
+                .discountPeriod(discountPeriod)
+                .usageLimit(usageLimit)
+                .minimumOrderAmount(minimumOrderAmount)
+                .maximumDiscountAmount(maximumDiscountAmount)
+                .active(active)
+                .conditions(conditions)
+                .currentUsageCount(0)
+                .build();
+    }
+
 
     public enum DiscountStrategy {
         PERCENTAGE,
