@@ -48,6 +48,14 @@ public class DiscountAggregate implements AggregateRoot {
     private Long version;
     private Set<DiscountConditionDomain> conditions = new HashSet<>();
 
+    public DiscountAmount applyDiscount(DiscountableOrderSnapshot orderSnapshot) {
+        validateApplicability(orderSnapshot, LocalDateTime.now());
+        DiscountAmount discountAmount = calculateDiscountAmount(orderSnapshot);
+        incrementUsageCount();
+        this.updatedAt = LocalDateTime.now();
+        return discountAmount;
+    }
+
     public void validateApplicability(DiscountableOrderSnapshot order, LocalDateTime currentTime) {
         validateIfActive();
         validateTimePeriod(currentTime);
@@ -167,6 +175,7 @@ public class DiscountAggregate implements AggregateRoot {
                 .currentUsageCount(0)
                 .build();
     }
+
 
 
     public enum DiscountStrategy {

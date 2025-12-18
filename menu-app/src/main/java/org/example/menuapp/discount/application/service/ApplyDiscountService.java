@@ -39,16 +39,7 @@ public class ApplyDiscountService {
             );
 
 
-            discount.validateApplicability(orderSnapshot, LocalDateTime.now());
-
-            // Query: calculate discount amount (pure, no state mutation)
-            DiscountAmount discountAmount = discount.calculateDiscountAmount(orderSnapshot);
-
-            // Command: apply the calculated discount to aggregate state
-            discount.applyCalculatedDiscount(discountAmount);
-
-            // Command: record usage
-            discount.incrementUsageCount();
+            DiscountAmount discountAmount = discount.applyDiscount(orderSnapshot);
 
             log.info("Discount of amount {} applied using code {}", discountAmount.getAmount(), discountCode);
             discountDomainRepository.save(discount);
