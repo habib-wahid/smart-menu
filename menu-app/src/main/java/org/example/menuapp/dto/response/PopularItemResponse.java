@@ -1,18 +1,13 @@
 package org.example.menuapp.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter @Setter
-@AllArgsConstructor @NoArgsConstructor
-public class PopularItemResponse {
-    private Long id;
-    private String name;
-    private  String description;
-    private Double price;
-    private String filePath;
-    private Double rating;
-    private Long numberOfOrders;
+public record PopularItemResponse(
+        Long id,
+        String name,
+        String description,
+        Double price,
+        String filePath,
+        String fileName,
+        Double rating,
+        Double totalRevenue
+) {
 }
