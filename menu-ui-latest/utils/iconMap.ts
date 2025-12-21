@@ -1,0 +1,60 @@
+import {
+  LayoutGrid,
+  UtensilsCrossed,
+  Soup,
+  IceCream,
+  Pizza,
+  Salad,
+  Coffee,
+  Cake,
+  Fish,
+  Beef,
+  Sandwich,
+  Cookie,
+  Wine,
+  Beer,
+  Drumstick,
+  Egg,
+  Apple,
+  Carrot,
+  type LucideIcon,
+} from "lucide-react";
+
+// Map category names to Lucide icons
+const iconMap: Record<string, LucideIcon> = {
+  all: LayoutGrid,
+  meal: UtensilsCrossed,
+  meals: UtensilsCrossed,
+  soup: Soup,
+  soups: Soup,
+  dessert: IceCream,
+  desserts: IceCream,
+  pizza: Pizza,
+  salad: Salad,
+  salads: Salad,
+  coffee: Coffee,
+  beverages: Coffee,
+  drinks: Coffee,
+  cake: Cake,
+  cakes: Cake,
+  fish: Fish,
+  seafood: Fish,
+  beef: Beef,
+  meat: Beef,
+  sandwich: Sandwich,
+  sandwiches: Sandwich,
+  cookies: Cookie,
+  snacks: Cookie,
+  wine: Wine,
+  beer: Beer,
+  chicken: Drumstick,
+  poultry: Drumstick,
+  breakfast: Egg,
+  fruits: Apple,
+  vegetables: Carrot,
+};
+
+export function getIconForCategory(categoryName: string): LucideIcon {
+  const normalizedName = categoryName.toLowerCase().trim();
+  return iconMap[normalizedName] || UtensilsCrossed;
+}
