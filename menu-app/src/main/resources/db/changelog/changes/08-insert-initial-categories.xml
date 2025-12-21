@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="26" author="Habib">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="2">SELECT COUNT(*) FROM category</sqlCheck>
+        </preConditions>
+
+        <insert tableName="category">
+            <column name="id" valueNumeric="3"/>
+            <column name="category_name" value="Appetizers"/>
+            <column name="description" value="Small dishes served before the main course"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="category">
+            <column name="id" valueNumeric="4"/>
+            <column name="category_name" value="Main Course"/>
+            <column name="description" value="Primary dishes including meat, seafood, and vegetarian options"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="category">
+            <column name="id" valueNumeric="5"/>
+            <column name="category_name" value="Desserts"/>
+            <column name="description" value="Sweet dishes served after the main meal"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="category">
+            <column name="id" valueNumeric="6"/>
+            <column name="category_name" value="Beverages"/>
+            <column name="description" value="Hot and cold drinks including soft drinks, juices, and specialty beverages"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="category">
+            <column name="id" valueNumeric="7"/>
+            <column name="category_name" value="Salads"/>
+            <column name="description" value="Fresh vegetable and fruit-based dishes"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="category">
+            <column name="id" valueNumeric="8"/>
+            <column name="category_name" value="Soups"/>
+            <column name="description" value="Hot and cold soup varieties"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="category">
+            <column name="id" valueNumeric="9"/>
+            <column name="category_name" value="Pizza"/>
+            <column name="description" value="Italian flatbread with various toppings"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="category">
+            <column name="id" valueNumeric="10"/>
+            <column name="category_name" value="Pasta"/>
+            <column name="description" value="Italian noodle dishes with various sauces"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="category">
+            <column name="id" valueNumeric="11"/>
+            <column name="category_name" value="Burgers"/>
+            <column name="description" value="Sandwiches with patties and various toppings"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="category">
+            <column name="id" valueNumeric="12"/>
+            <column name="category_name" value="Sides"/>
+            <column name="description" value="Accompanying dishes served with main courses"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="category">
+            <column name="id" valueNumeric="13"/>
+            <column name="category_name" value="Seafood"/>
+            <column name="description" value="Fresh fish and shellfish dishes"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="category">
+            <column name="id" valueNumeric="14"/>
+            <column name="category_name" value="Breakfast"/>
+            <column name="description" value="Morning meal items including eggs, pancakes, and cereals"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="category">
+            <column name="id" valueNumeric="15"/>
+            <column name="category_name" value="Snacks"/>
+            <column name="description" value="Light food items for quick bites"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="category">
+            <column name="id" valueNumeric="16"/>
+            <column name="category_name" value="BBQ and Grills"/>
+            <column name="description" value="Barbecued and grilled meat dishes"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="category">
+            <column name="id" valueNumeric="17"/>
+            <column name="category_name" value="Healthy Options"/>
+            <column name="description" value="Low-calorie and nutritious meal choices"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <sql>
+            SELECT setval('category_sequence', (SELECT MAX(id) FROM category));
+        </sql>
+    </changeSet>
+</databaseChangeLog>
+
