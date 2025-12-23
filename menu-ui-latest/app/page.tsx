@@ -1,6 +1,11 @@
+"use client";
+
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#87CEEB] to-[#E20BF4] flex flex-col items-center px-4 py-8">
       {/* Restaurant Name */}
@@ -22,7 +27,10 @@ export default function Home() {
       </div>
 
       {/* Get Started Button */}
-      <button className="mt-10 md:mt-14 px-10 py-4 bg-white text-black text-lg md:text-xl font-semibold rounded-full shadow-lg hover:bg-gray-100 hover:scale-105 transition-all duration-300 active:scale-95">
+      <button
+        className="mt-10 md:mt-14 px-10 py-4 bg-white text-black text-lg md:text-xl font-semibold rounded-full shadow-lg hover:bg-gray-100 hover:scale-105 transition-all duration-300 active:scale-95"
+        onClick={() => router.push("/menu")}
+      >
         Get Started
       </button>
     </div>

@@ -15,7 +15,7 @@ interface FoodCardProps {
 export default function FoodCard({
   name,
   price,
-image,
+  image,
   isVeg = true,
   rating,
   showRating = false,
