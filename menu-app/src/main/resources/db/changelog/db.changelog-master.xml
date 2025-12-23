@@ -14,4 +14,5 @@
     <include file="/db/changelog/changes/06-create-discount-schema.xml" />
     <include file="/db/changelog/changes/07-add-discount-columns-in-order-audit.xml" />
     <include file="/db/changelog/changes/08-insert-initial-categories.xml" />
+    <include file="/db/changelog/changes/09-insert-item-initial-data.xml" />
 </databaseChangeLog>

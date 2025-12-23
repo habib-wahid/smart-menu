@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="insert-items-with-categories" author="system">
+
+        <!-- Breakfast Items (Category ID: 1) -->
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Classic Pancakes"/>
+            <column name="description" value="Fluffy pancakes served with maple syrup and butter"/>
+            <column name="item_price" value="149"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=400&amp;q=80"/>
+            <column name="file_name" value="classic-pancakes.jpg"/>
+            <column name="item_rating" value="4.5"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Eggs Benedict"/>
+            <column name="description" value="Poached eggs on English muffin with hollandaise sauce"/>
+            <column name="item_price" value="249"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1608039755401-742074f0548d?w=400&amp;q=80"/>
+            <column name="file_name" value="eggs-benedict.jpg"/>
+            <column name="item_rating" value="4.7"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Lunch Items (Category ID: 2) -->
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Grilled Chicken Sandwich"/>
+            <column name="description" value="Grilled chicken breast with lettuce and tomato"/>
+            <column name="item_price" value="229"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=400&amp;q=80"/>
+            <column name="file_name" value="grilled-chicken-sandwich.jpg"/>
+            <column name="item_rating" value="4.5"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Club Sandwich"/>
+            <column name="description" value="Triple-decker sandwich with turkey, bacon, and vegetables"/>
+            <column name="item_price" value="249"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400&amp;q=80"/>
+            <column name="file_name" value="club-sandwich.jpg"/>
+            <column name="item_rating" value="4.6"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Appetizers Items (Category ID: 3) -->
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Mozzarella Sticks"/>
+            <column name="description" value="Crispy fried mozzarella with marinara sauce"/>
+            <column name="item_price" value="149"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1531749668029-2db88e4276c7?w=400&amp;q=80"/>
+            <column name="file_name" value="mozzarella-sticks.jpg"/>
+            <column name="item_rating" value="4.3"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Chicken Wings"/>
+            <column name="description" value="Buffalo chicken wings with ranch dressing"/>
+            <column name="item_price" value="199"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=400&amp;q=80"/>
+            <column name="file_name" value="chicken-wings.jpg"/>
+            <column name="item_rating" value="4.6"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Main Course Items (Category ID: 4) -->
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Grilled Steak"/>
+            <column name="description" value="Prime ribeye steak with vegetables and mashed potatoes"/>
+            <column name="item_price" value="599"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1600891964092-4316c288032e?w=400&amp;q=80"/>
+            <column name="file_name" value="grilled-steak.jpg"/>
+            <column name="item_rating" value="4.8"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Roasted Chicken"/>
+            <column name="description" value="Half roasted chicken with herbs and sides"/>
+            <column name="item_price" value="399"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=400&amp;q=80"/>
+            <column name="file_name" value="roasted-chicken.jpg"/>
+            <column name="item_rating" value="4.6"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Desserts Items (Category ID: 5) -->
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Chocolate Cake"/>
+            <column name="description" value="Rich chocolate layer cake with ganache"/>
+            <column name="item_price" value="179"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&amp;q=80"/>
+            <column name="file_name" value="chocolate-cake.jpg"/>
+            <column name="item_rating" value="4.7"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Tiramisu"/>
+            <column name="description" value="Italian coffee-flavored dessert"/>
+            <column name="item_price" value="199"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400&amp;q=80"/>
+            <column name="file_name" value="tiramisu.jpg"/>
+            <column name="item_rating" value="4.8"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Beverages Items (Category ID: 6) -->
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Fresh Orange Juice"/>
+            <column name="description" value="Freshly squeezed orange juice"/>
+            <column name="item_price" value="89"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&amp;q=80"/>
+            <column name="file_name" value="orange-juice.jpg"/>
+            <column name="item_rating" value="4.4"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Cappuccino"/>
+            <column name="description" value="Espresso with steamed milk foam"/>
+            <column name="item_price" value="99"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400&amp;q=80"/>
+            <column name="file_name" value="cappuccino.jpg"/>
+            <column name="item_rating" value="4.5"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Salads Items (Category ID: 7) -->
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Caesar Salad"/>
+            <column name="description" value="Romaine lettuce with Caesar dressing and croutons"/>
+            <column name="item_price" value="169"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&amp;q=80"/>
+            <column name="file_name" value="caesar-salad.jpg"/>
+            <column name="item_rating" value="4.3"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Greek Salad"/>
+            <column name="description" value="Fresh vegetables with feta cheese and olives"/>
+            <column name="item_price" value="189"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=400&amp;q=80"/>
+            <column name="file_name" value="greek-salad.jpg"/>
+            <column name="item_rating" value="4.4"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Soups Items (Category ID: 8) -->
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Tomato Soup"/>
+            <column name="description" value="Creamy tomato soup with basil"/>
+            <column name="item_price" value="129"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&amp;q=80"/>
+            <column name="file_name" value="tomato-soup.jpg"/>
+            <column name="item_rating" value="4.2"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Chicken Noodle Soup"/>
+            <column name="description" value="Homemade chicken soup with vegetables"/>
+            <column name="item_price" value="149"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1613844237701-8f3664fc2eff?w=400&amp;q=80"/>
+            <column name="file_name" value="chicken-noodle-soup.jpg"/>
+            <column name="item_rating" value="4.5"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Pizza Items (Category ID: 9) -->
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Margherita Pizza"/>
+            <column name="description" value="Classic pizza with tomato, mozzarella, and basil"/>
+            <column name="item_price" value="299"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&amp;q=80"/>
+            <column name="file_name" value="margherita-pizza.jpg"/>
+            <column name="item_rating" value="4.6"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Chicken Pizza"/>
+            <column name="description" value="Pizza topped with grilled chicken and vegetables"/>
+            <column name="item_price" value="349"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&amp;q=80"/>
+            <column name="file_name" value="chicken-pizza.jpg"/>
+            <column name="item_rating" value="4.5"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Pasta Items (Category ID: 10) -->
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Spaghetti Carbonara"/>
+            <column name="description" value="Creamy pasta with bacon and parmesan"/>
+            <column name="item_price" value="279"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1612874742237-6526221588e3?w=400&amp;q=80"/>
+            <column name="file_name" value="spaghetti-carbonara.jpg"/>
+            <column name="item_rating" value="4.7"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Penne Arrabbiata"/>
+            <column name="description" value="Spicy tomato sauce pasta with garlic"/>
+            <column name="item_price" value="249"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=400&amp;q=80"/>
+            <column name="file_name" value="penne-arrabbiata.jpg"/>
+            <column name="item_rating" value="4.4"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Burgers Items (Category ID: 11) -->
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Classic Beef Burger"/>
+            <column name="description" value="Juicy beef patty with lettuce, tomato, and cheese"/>
+            <column name="item_price" value="259"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&amp;q=80"/>
+            <column name="file_name" value="beef-burger.jpg"/>
+            <column name="item_rating" value="4.6"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Chicken Burger"/>
+            <column name="description" value="Grilled chicken burger with special sauce"/>
+            <column name="item_price" value="239"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&amp;q=80"/>
+            <column name="file_name" value="chicken-burger.jpg"/>
+            <column name="item_rating" value="4.5"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Sides Items (Category ID: 12) -->
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="French Fries"/>
+            <column name="description" value="Crispy golden french fries"/>
+            <column name="item_price" value="99"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400&amp;q=80"/>
+            <column name="file_name" value="french-fries.jpg"/>
+            <column name="item_rating" value="4.3"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Coleslaw"/>
+            <column name="description" value="Fresh cabbage slaw with creamy dressing"/>
+            <column name="item_price" value="79"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1625938145312-435e2c9f51ea?w=400&amp;q=80"/>
+            <column name="file_name" value="coleslaw.jpg"/>
+            <column name="item_rating" value="4.1"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Seafood Items (Category ID: 13) -->
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Grilled Salmon"/>
+            <column name="description" value="Fresh Atlantic salmon with herbs"/>
+            <column name="item_price" value="499"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&amp;q=80"/>
+            <column name="file_name" value="grilled-salmon.jpg"/>
+            <column name="item_rating" value="4.7"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Shrimp Scampi"/>
+            <column name="description" value="Garlic butter shrimp with pasta"/>
+            <column name="item_price" value="449"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1633504581786-316c8002b1b9?w=400&amp;q=80"/>
+            <column name="file_name" value="shrimp-scampi.jpg"/>
+            <column name="item_rating" value="4.6"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Snacks Items (Category ID: 15) -->
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Potato Wedges"/>
+            <column name="description" value="Seasoned potato wedges with dipping sauce"/>
+            <column name="item_price" value="119"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?w=400&amp;q=80"/>
+            <column name="file_name" value="potato-wedges.jpg"/>
+            <column name="item_rating" value="4.2"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Chicken Nuggets"/>
+            <column name="description" value="Crispy chicken nuggets with sauces"/>
+            <column name="item_price" value="139"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1562967914-608f82629710?w=400&amp;q=80"/>
+            <column name="file_name" value="chicken-nuggets.jpg"/>
+            <column name="item_rating" value="4.4"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <!-- BBQ and Grills Items (Category ID: 16) -->
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="BBQ Chicken"/>
+            <column name="description" value="Grilled chicken with BBQ sauce"/>
+            <column name="item_price" value="349"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1532550907401-a500c9a57435?w=400&amp;q=80"/>
+            <column name="file_name" value="bbq-chicken.jpg"/>
+            <column name="item_rating" value="4.6"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Beef Brisket"/>
+            <column name="description" value="Slow-smoked beef brisket"/>
+            <column name="item_price" value="549"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1544025162-d76694265947?w=400&amp;q=80"/>
+            <column name="file_name" value="beef-brisket.jpg"/>
+            <column name="item_rating" value="4.8"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Healthy Options Items (Category ID: 17) -->
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Quinoa Bowl"/>
+            <column name="description" value="Healthy quinoa with roasted vegetables"/>
+            <column name="item_price" value="229"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&amp;q=80"/>
+            <column name="file_name" value="quinoa-bowl.jpg"/>
+            <column name="item_rating" value="4.5"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="item">
+            <column name="id" valueSequenceNext="item_sequence"/>
+            <column name="name" value="Grilled Vegetables"/>
+            <column name="description" value="Assorted grilled seasonal vegetables"/>
+            <column name="item_price" value="189"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="is_deleted" valueBoolean="false"/>
+            <column name="file_path" value="https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&amp;q=80"/>
+            <column name="file_name" value="grilled-vegetables.jpg"/>
+            <column name="item_rating" value="4.3"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Item-Category Relationships -->
+        <!-- Breakfast items (Category 1) -->
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Classic Pancakes')"/>
+            <column name="category_id" value="1"/>
+        </insert>
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Eggs Benedict')"/>
+            <column name="category_id" value="1"/>
+        </insert>
+
+        <!-- Lunch items (Category 2) -->
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Grilled Chicken Sandwich')"/>
+            <column name="category_id" value="2"/>
+        </insert>
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Club Sandwich')"/>
+            <column name="category_id" value="2"/>
+        </insert>
+
+        <!-- Appetizers items (Category 3) -->
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Mozzarella Sticks')"/>
+            <column name="category_id" value="3"/>
+        </insert>
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Chicken Wings')"/>
+            <column name="category_id" value="3"/>
+        </insert>
+
+        <!-- Main Course items (Category 4) -->
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Grilled Steak')"/>
+            <column name="category_id" value="4"/>
+        </insert>
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Roasted Chicken')"/>
+            <column name="category_id" value="4"/>
+        </insert>
+
+        <!-- Desserts items (Category 5) -->
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Chocolate Cake')"/>
+            <column name="category_id" value="5"/>
+        </insert>
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Tiramisu')"/>
+            <column name="category_id" value="5"/>
+        </insert>
+
+        <!-- Beverages items (Category 6) -->
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Fresh Orange Juice')"/>
+            <column name="category_id" value="6"/>
+        </insert>
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Cappuccino')"/>
+            <column name="category_id" value="6"/>
+        </insert>
+
+        <!-- Salads items (Category 7) -->
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Caesar Salad')"/>
+            <column name="category_id" value="7"/>
+        </insert>
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Greek Salad')"/>
+            <column name="category_id" value="7"/>
+        </insert>
+
+        <!-- Soups items (Category 8) -->
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Tomato Soup')"/>
+            <column name="category_id" value="8"/>
+        </insert>
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Chicken Noodle Soup')"/>
+            <column name="category_id" value="8"/>
+        </insert>
+
+        <!-- Pizza items (Category 9) -->
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Margherita Pizza')"/>
+            <column name="category_id" value="9"/>
+        </insert>
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Chicken Pizza')"/>
+            <column name="category_id" value="9"/>
+        </insert>
+
+        <!-- Pasta items (Category 10) -->
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Spaghetti Carbonara')"/>
+            <column name="category_id" value="10"/>
+        </insert>
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Penne Arrabbiata')"/>
+            <column name="category_id" value="10"/>
+        </insert>
+
+        <!-- Burgers items (Category 11) -->
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Classic Beef Burger')"/>
+            <column name="category_id" value="11"/>
+        </insert>
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Chicken Burger')"/>
+            <column name="category_id" value="11"/>
+        </insert>
+
+        <!-- Sides items (Category 12) -->
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'French Fries')"/>
+            <column name="category_id" value="12"/>
+        </insert>
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Coleslaw')"/>
+            <column name="category_id" value="12"/>
+        </insert>
+
+        <!-- Seafood items (Category 13) -->
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Grilled Salmon')"/>
+            <column name="category_id" value="13"/>
+        </insert>
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Shrimp Scampi')"/>
+            <column name="category_id" value="13"/>
+        </insert>
+
+        <!-- Snacks items (Category 15) -->
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Potato Wedges')"/>
+            <column name="category_id" value="15"/>
+        </insert>
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Chicken Nuggets')"/>
+            <column name="category_id" value="15"/>
+        </insert>
+
+        <!-- BBQ and Grills items (Category 16) -->
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'BBQ Chicken')"/>
+            <column name="category_id" value="16"/>
+        </insert>
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Beef Brisket')"/>
+            <column name="category_id" value="16"/>
+        </insert>
+
+        <!-- Healthy Options items (Category 17) -->
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Quinoa Bowl')"/>
+            <column name="category_id" value="17"/>
+        </insert>
+        <insert tableName="item_category">
+            <column name="item_id" valueComputed="(SELECT id FROM item WHERE name = 'Grilled Vegetables')"/>
+            <column name="category_id" value="17"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>

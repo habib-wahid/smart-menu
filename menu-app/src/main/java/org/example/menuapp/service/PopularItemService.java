@@ -22,7 +22,7 @@ public class PopularItemService {
     @Cacheable("popularItems")
     public List<PopularItemResponse> getPopularItems() {
         List<PopularItemPojo> popularItems = itemRepository.getPopularItems(
-                OrderStatus.PLACED.getStatus(), LocalDateTime.now().minusDays(1L), LocalDateTime.now().plusDays(1));
+                OrderStatus.PLACED.getStatus(), LocalDateTime.now().minusDays(60), LocalDateTime.now().plusDays(1));
         return popularItems.stream()
                 .map(popularItemPojo -> new PopularItemResponse(
                         popularItemPojo.getId(),
