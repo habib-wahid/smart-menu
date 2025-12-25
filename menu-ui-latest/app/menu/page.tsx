@@ -7,6 +7,9 @@ import MenuContent from "@/app/components/MenuContent";
 import FoodCard from "@/app/components/FoodCard";
 import BottomNav from "@/app/components/BottomNav";
 
+// Force dynamic rendering - don't pre-render at build time
+export const dynamic = "force-dynamic";
+
 // Static special items (could also come from API)
 const specialItems = [
   {

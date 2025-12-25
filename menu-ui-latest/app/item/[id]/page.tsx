@@ -4,6 +4,9 @@ import { notFound } from "next/navigation";
 import { fetchItemById, fetchAddons } from "@/services/itemService";
 import ItemDetailContent from "@/app/components/ItemDetailContent";
 
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
+
 interface ItemPageProps {
   params: Promise<{ id: string }>;
 }
