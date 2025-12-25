@@ -59,7 +59,7 @@ interface CartContextType {
   totalPrice: number;
 }
 
-const API_BASE_URL = "http://localhost:8080/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 

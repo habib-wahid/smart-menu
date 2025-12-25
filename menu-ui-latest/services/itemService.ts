@@ -20,7 +20,7 @@ export interface Addon {
   rating: number;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function fetchItemById(id: string): Promise<Item | null> {
   try {
@@ -50,6 +50,22 @@ export async function fetchAddons(): Promise<Addon[]> {
     return result || [];
   } catch (error) {
     console.error("Error fetching addons:", error);
+    return [];
+  }
+}
+
+export async function fetchItemsByCategory(categoryId: number): Promise<Item[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/item/by-category/${categoryId}`, {
+      cache: "no-store",
+    });
+    if (!response.ok) {
+      throw new Error("Failed to fetch items by category");
+    }
+    const result: ApiResponse<Item[]> = await response.json();
+    return result.data || [];
+  } catch (error) {
+    console.error("Error fetching items by category:", error);
     return [];
   }
 }

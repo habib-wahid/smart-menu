@@ -3,8 +3,7 @@ import { Menu, Percent } from "lucide-react";
 import { fetchCategories } from "@/services/categoryService";
 import { fetchPopularItems } from "@/services/popularItemService";
 import SearchBar from "@/app/components/SearchBar";
-import CategoryTabs from "@/app/components/CategoryTabs";
-import PopularSection from "@/app/components/PopularSection";
+import MenuContent from "@/app/components/MenuContent";
 import FoodCard from "@/app/components/FoodCard";
 import BottomNav from "@/app/components/BottomNav";
 
@@ -63,11 +62,8 @@ export default async function MenuPage() {
         {/* Search Bar - Client Component */}
         <SearchBar />
 
-        {/* Category Tabs - Client Component */}
-        <CategoryTabs categories={categories} />
-
-        {/* Popular Section - Client Component */}
-        <PopularSection items={popularItems} />
+        {/* Menu Content - Category Tabs + Items Section (Client Component) */}
+        <MenuContent categories={categories} initialPopularItems={popularItems} />
 
         {/* Promotion Banner - Static, Server Rendered */}
         <section className="px-5 mb-6">
