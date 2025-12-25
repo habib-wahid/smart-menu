@@ -10,5 +10,6 @@ public record AddonRequest(
         @NotBlank(message = "Addon must have a name") String name,
         String description,
         @Positive(message = "Price must be grater than 0") Double price,
-        @NotEmpty(message = "Must select an item") Set<Long> itemIds)
+        @NotEmpty(message = "Must select an item") Set<Long> itemIds,
+        String filePath)
 { }

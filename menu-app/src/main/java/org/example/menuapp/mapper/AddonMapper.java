@@ -11,7 +11,6 @@ public interface AddonMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "fileName", ignore = true)
-    @Mapping(target = "filePath", ignore = true)
     @Mapping(target = "rating", ignore = true)
     Addon toAddon(AddonRequest request);
 
