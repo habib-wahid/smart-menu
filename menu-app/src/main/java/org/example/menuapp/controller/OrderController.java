@@ -56,8 +56,8 @@ public class OrderController {
             @RequestParam(value = "0") Long page,
             @RequestParam(value = "50") Long size
     ) {
-        List<OrderSummary> orderSummaries = orderService.getAllOrdersSummary(page, size);
-        return ResponseEntity.status(HttpStatus.OK).body(orderSummaries);
+       // List<OrderSummary> orderSummaries = orderService.getAllOrdersSummary(page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     //todo need two apis. 1. Get all orders of a customer based on placed, processing, finish. 2. Get order details of a customer order

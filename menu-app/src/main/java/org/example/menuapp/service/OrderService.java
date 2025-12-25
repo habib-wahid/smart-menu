@@ -33,7 +33,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,7 +53,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final AddonService addonService;
     private final ItemService itemService;
-    private final RedisTemplate<String, Object> redisTemplate;
+    //private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
     private final CustomerService customerService;
     private final ApplyDiscountService applyDiscountService;
@@ -62,7 +61,6 @@ public class OrderService {
     public OrderService(OrderRepository orderRepository,
                         AddonService addonService,
                         ItemService itemService,
-                        RedisTemplate<String, Object> redisTemplate,
                         ObjectMapper objectMapper,
                         CustomerService customerService,
                         ApplyDiscountService applyDiscountService) {
@@ -70,7 +68,7 @@ public class OrderService {
         this.orderRepository = orderRepository;
         this.addonService = addonService;
         this.itemService = itemService;
-        this.redisTemplate = redisTemplate;
+       // this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
         this.customerService = customerService;
     }
@@ -326,17 +324,17 @@ public class OrderService {
                 .collect(Collectors.toSet());
     }
 
-    public List<OrderSummary> getAllOrdersSummary(Long page, Long size) {
-        List<Object> summaries = redisTemplate.opsForList().range(AppConstants.ORDERS_KEY, page * size, (page + 1) * size - 1);
-        if (summaries != null) {
-            return summaries
-                    .stream()
-                    .map(obj -> objectMapper.convertValue(obj, OrderSummary.class))
-                    .toList();
-        }
-
-        return Collections.emptyList();
-    }
+//    public List<OrderSummary> getAllOrdersSummary(Long page, Long size) {
+//        List<Object> summaries = redisTemplate.opsForList().range(AppConstants.ORDERS_KEY, page * size, (page + 1) * size - 1);
+//        if (summaries != null) {
+//            return summaries
+//                    .stream()
+//                    .map(obj -> objectMapper.convertValue(obj, OrderSummary.class))
+//                    .toList();
+//        }
+//
+//        return Collections.emptyList();
+//    }
 
 
     private OrderResponse mapToOrderResponse(Order order) {

@@ -1,9 +1,9 @@
 package org.example.menuapp.repository;
 
-import io.lettuce.core.dynamic.annotation.Param;
 import org.example.menuapp.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Set;
 

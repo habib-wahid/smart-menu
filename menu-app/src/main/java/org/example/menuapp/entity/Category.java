@@ -18,8 +18,8 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import java.time.LocalDateTime;
 
 @Entity
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "category_cache")
+//@Cacheable
+//@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "category_cache")
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
 public class Category {

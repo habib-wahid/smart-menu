@@ -21,7 +21,7 @@ Content-Type: application/json
 ###
 
 ### Create Addon with File
-POST http://localhost:8081/api/addon
+POST http://localhost:8080/api/addon
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
@@ -29,9 +29,9 @@ Content-Disposition: form-data; name="addon"
 Content-Type: application/json
 
 {
-  "name": "Coca Cola",
-  "description": "Refreshing Beverage",
-  "price": 25.00,
+  "name": "Jalapenos",
+  "description": "Jalapenos for spicy lovers",
+  "price": 10.00,
   "itemIds": [1,5,6]
 }
 

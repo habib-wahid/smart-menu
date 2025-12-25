@@ -5,7 +5,6 @@ import org.example.menuapp.dto.response.PopularItemPojo;
 import org.example.menuapp.dto.response.PopularItemResponse;
 import org.example.menuapp.enums.OrderStatus;
 import org.example.menuapp.repository.ItemRepository;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,7 +18,6 @@ public class PopularItemService {
     private final ItemRepository itemRepository;
 
 
-    @Cacheable("popularItems")
     public List<PopularItemResponse> getPopularItems() {
         List<PopularItemPojo> popularItems = itemRepository.getPopularItems(
                 OrderStatus.PLACED.getStatus(), LocalDateTime.now().minusDays(60), LocalDateTime.now().plusDays(1));
