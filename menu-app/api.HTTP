@@ -21,7 +21,7 @@ Content-Type: application/json
 ###
 
 ### Create Addon with File
-POST http://localhost:8080/api/addon
+POST https://smart-menu-app.onrender.com/api/addon
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
@@ -29,11 +29,11 @@ Content-Disposition: form-data; name="addon"
 Content-Type: application/json
 
 {
-  "name": "Jalapenos",
-  "description": "Jalapenos for spicy lovers",
-  "price": 10.00,
-  "itemIds": [1,5,6],
-  "filePath": "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400&q=80"
+  "name": "Bacon Strips",
+  "description": "Add Bacon to your item",
+  "price": 20.00,
+  "itemIds": [2,8],
+  "filePath": "https://images.unsplash.com/photo-1528607929212-2636ec44253e?w=400&q=80"
 }
 
 --WebAppBoundary
